@@ -10,8 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using TravelingBlog.BusinessLogicLayer.Contracts;
+using TravelingBlog.BusinessLogicLayer.Repositories;
+using TravelingBlog.BusinessLogicLayer.ResourseHelpers;
 using TravelingBlog.BusinessLogicLayer.ViewModels.DTO;
 using TravelingBlog.DataAcceesLayer.Models.Entities;
+using TravelingBlog.Helpers;
 
 namespace TravelingBlog.Controllers
 {
@@ -33,11 +36,12 @@ namespace TravelingBlog.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllBlogs()
+        public async Task<IActionResult> GetAllBlogs(ResourseAttribute attribute)
         {
             try
             {
-                var blog = await unitOfWork.PostBlogs.GetAllPostBlogsAsync();
+                
+                var blog = await unitOfWork.PostBlogs.GetAllPostBlogsAsync(attribute);
                 if (blog == null)
                 {
                     logger.LogInfo("TripsNotFound");
