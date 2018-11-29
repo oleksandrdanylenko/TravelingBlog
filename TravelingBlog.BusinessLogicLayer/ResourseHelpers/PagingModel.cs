@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TravelingBlog.BusinessLogicLayer.ResourseHelpers
 {
-    public class ResourseAttribute
+    public class PagingModel
     {
         public const int maxPageSize = 20;
 
@@ -17,5 +17,9 @@ namespace TravelingBlog.BusinessLogicLayer.ResourseHelpers
             get { return _pageSize; }
             set { _pageSize = (value > maxPageSize) ? maxPageSize : value; }
         }
+
+        public string NameFilter { get; set; }
+
+        public string SearchQuery { get; set; }
     }
 }
