@@ -28,7 +28,8 @@ section, summary, time, mark, audio, video {
 }
 .toBeCentered
 {
-	width: 70%;
+	width: 55%;
+	height: 70em;
 	margin-right: auto;
 	margin-left: auto;
 }
@@ -2750,7 +2751,8 @@ input, select, textarea {
 				-ms-flex-grow: 1;
 				flex-grow: 1;
 				-ms-flex: 1;
-				padding: 3.75em 3em 3.3em 3em;
+				padding: 3.75em 3em 3.3em 3em;	
+
 			}
 
 				.post > header .title h2 {
@@ -3101,7 +3103,7 @@ input, select, textarea {
 /* Header */
 
 	body {
-		padding-top: 3.5em;
+		padding-top: 1.4em;
 	}
 
 	#header {
