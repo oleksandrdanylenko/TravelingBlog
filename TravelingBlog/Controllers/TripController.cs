@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravelingBlog.BusinessLogicLayer.Contracts;
+using TravelingBlog.BusinessLogicLayer.ResourseHelpers;
 using TravelingBlog.BusinessLogicLayer.ViewModels.DTO;
 using TravelingBlog.DataAcceesLayer.Models.Entities;
 
@@ -32,7 +33,7 @@ namespace TravelingBlog.Controllers
         {
             try
             {
-                var trips = await unitOfWork.Trips.GetAllTripsAsync();
+                var trips = await unitOfWork.Trips.GetAllTripsAsync(new PagingModel());
                 if (trips == null)
                 {
                     logger.LogInfo("TripsNotFound");

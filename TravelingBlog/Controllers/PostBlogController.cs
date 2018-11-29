@@ -42,7 +42,6 @@ namespace TravelingBlog.Controllers
             {
 
                 var blog = await unitOfWork.PostBlogs.GetAllPostBlogsAsync(attribute);
-                //var search =  unitOfWork.PostBlogs.SearchBlog(searching);
                 if (blog == null)
                 {
                     logger.LogInfo("TripsNotFound");
@@ -59,14 +58,7 @@ namespace TravelingBlog.Controllers
 
         }
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult FilterResult(string country = "Ukraine")
-        //{
-        //    var result = unitOfWork.Trips.FilterTripsByCountry(country);
-
-        //    return Ok(result);
-        //}
+        
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBlog(int id)
