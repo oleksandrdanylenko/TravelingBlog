@@ -26,10 +26,7 @@ import { SearchComponent } from './search/search.component';
     HeaderComponent,
     HomeComponent,
     FooterComponent,
-<<<<<<< HEAD
     SearchComponent
-=======
->>>>>>> a3cfd088290d4f5ca1e7c88aba07c540c1d43b92
   ],
   imports: [
     AccountModule,

@@ -22,8 +22,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /***/ }),
-<<<<<<< HEAD:TravelingBlog/wwwroot/polyfills.js
-=======
 
 /***/ "./node_modules/core-js/es6/reflect.js":
 /*!*********************************************!*\
@@ -50,7 +48,6 @@ module.exports = __webpack_require__(/*! ../modules/_core */ "./node_modules/cor
 
 
 /***/ }),
->>>>>>> a3cfd088290d4f5ca1e7c88aba07c540c1d43b92:TravelingBlog/wwwroot/polyfills.js
 
 /***/ "./node_modules/core-js/es7/reflect.js":
 /*!*********************************************!*\
@@ -5956,13 +5953,10 @@ Zone.__load_patch('PromiseRejectionEvent', function (global, Zone) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var zone_js_dist_zone__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! zone.js/dist/zone */ "./node_modules/zone.js/dist/zone.js");
 /* harmony import */ var zone_js_dist_zone__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(zone_js_dist_zone__WEBPACK_IMPORTED_MODULE_0__);
-<<<<<<< HEAD:TravelingBlog/wwwroot/polyfills.js
-=======
 /* harmony import */ var core_js_es6_reflect__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! core-js/es6/reflect */ "./node_modules/core-js/es6/reflect.js");
 /* harmony import */ var core_js_es6_reflect__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(core_js_es6_reflect__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var core_js_es7_reflect__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! core-js/es7/reflect */ "./node_modules/core-js/es7/reflect.js");
 /* harmony import */ var core_js_es7_reflect__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(core_js_es7_reflect__WEBPACK_IMPORTED_MODULE_2__);
->>>>>>> a3cfd088290d4f5ca1e7c88aba07c540c1d43b92:TravelingBlog/wwwroot/polyfills.js
 /**
  * This file includes polyfills needed by Angular and is loaded before the app.
  * You can add your own extra polyfills to this file.
@@ -6027,13 +6021,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-<<<<<<< HEAD:TravelingBlog/wwwroot/polyfills.js
 __webpack_require__(/*! C:\Users\Sashka\Desktop\Soft\TravelingBlog\TravelingBlog\TravelingBlog.Angular\src\polyfills.ts */"./src/polyfills.ts");
 module.exports = __webpack_require__(/*! C:\Users\Sashka\Desktop\Soft\TravelingBlog\TravelingBlog\TravelingBlog.Angular\node_modules\@angular-devkit\build-angular\src\angular-cli-files\models\jit-polyfills.js */"./node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/jit-polyfills.js");
-=======
-__webpack_require__(/*! C:\Users\radyu\Desktop\GitHub\TravelingBlog\TravelingBlog.Angular\src\polyfills.ts */"./src/polyfills.ts");
-module.exports = __webpack_require__(/*! C:\Users\radyu\Desktop\GitHub\TravelingBlog\TravelingBlog.Angular\node_modules\@angular-devkit\build-angular\src\angular-cli-files\models\jit-polyfills.js */"./node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/jit-polyfills.js");
->>>>>>> a3cfd088290d4f5ca1e7c88aba07c540c1d43b92:TravelingBlog/wwwroot/polyfills.js
 
 
 /***/ })

@@ -49,13 +49,14 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             return result;
         }
 
-        public IEnumerable<Country> FilterTripsByCountry(string country)
+        public IEnumerable<Trip> FilterTripsByCountry(string country)
         {
-            var result = ApplicationDbContext.Countries.Where(o => o.Name == country)
-                .Include(c => c.CountryTrips)
-                .ThenInclude(m => m.Trip);
-            return result.ToList();
-
+            //var result = ApplicationDbContext.Countries.Where(o => o.Name == country)
+            //    .Include(c => c.CountryTrips)
+            //    .ThenInclude(m => m.Trip);
+           return ApplicationDbContext.Trips.Where(i => i.CountryTrips.Any(t => t.Country.Name == country))
+                .ToList();
+            //return result.SelectMany(i=>i.CountryTrips).Select(i=>i.Trip).ToList();
         }
     }
 }

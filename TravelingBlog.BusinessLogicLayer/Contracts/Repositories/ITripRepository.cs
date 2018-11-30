@@ -15,6 +15,6 @@ namespace TravelingBlog.BusinessLogicLayer.Contracts.Repositories
         bool IsUserCreator(int userId, int tripId);
         Trip GetTripWithPostBlogs(int id);
         IQueryable<Trip> SearchTrips(string search);
-        IEnumerable<Country> FilterTripsByCountry(string country);
+        IEnumerable<Trip> FilterTripsByCountry(string country);
     }
 }

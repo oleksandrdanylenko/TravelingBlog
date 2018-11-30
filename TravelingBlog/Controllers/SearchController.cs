@@ -18,7 +18,9 @@ namespace TravelingBlog.Controllers
     {
         public IUnitOfWork UnitOfWork { get; set; }
 
-        private ILoggerManager logger;
+        private ILoggerManager logger { get; set; }
+
+        private IHttpContextAccessor contextAccessor { get; set; }
 
         public SearchController(IUnitOfWork _unitOfWork, ILoggerManager _logger)
         {
@@ -27,8 +29,8 @@ namespace TravelingBlog.Controllers
         }
 
 
-        [HttpGet(Name = "searchblogs")]
-        [AllowAnonymous]
+        [HttpGet]
+        [Route("api/search/findtrips")]
         public IActionResult GetTripsBySearchResult(PagingModel attribute)
         {
             try
@@ -41,17 +43,16 @@ namespace TravelingBlog.Controllers
                 Console.WriteLine(e);
                 return StatusCode(500);
             }
-           
+
         }
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public IActionResult FilterResult(string country = "Ukraine")
-        //{
-        //    var result = unitOfWork.Trips.FilterTripsByCountry(country);
+        [HttpGet]
+        [Route("api/search/filterbycountries")]
+        public IActionResult FilterResult(string country)
+        {
+            var result = UnitOfWork.Trips.FilterTripsByCountry(country);
 
-        //    return Ok(result);
-        //
-        
+            return Ok(result);
+        }
     }
 }
