@@ -18,6 +18,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 
 import { ConfigService } from './shared/utils/config.service';
 import { FooterComponent } from './footer/footer.component';
+import { TripsModule } from './trips/trips.module';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { FooterComponent } from './footer/footer.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    routing
+    routing,
+    TripsModule
   ],
   providers: [ConfigService, {
     provide: XHRBackend,
