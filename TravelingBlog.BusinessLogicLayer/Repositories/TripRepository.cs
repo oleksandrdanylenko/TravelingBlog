@@ -22,7 +22,10 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
 
         public async Task<IEnumerable<Trip>> GetAllTripsAsync()
         {
-            var trips = await FindAllAsync();
+            var trips = await ApplicationDbContext.Set<Trip>()
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country)
+                .ToListAsync();
             return trips.OrderBy(t => t.Name);
         }
 

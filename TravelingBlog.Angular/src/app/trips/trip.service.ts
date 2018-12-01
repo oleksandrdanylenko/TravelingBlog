@@ -13,9 +13,9 @@ import { Trip } from './models/trip';
 @Injectable()
 export class TripService extends BaseService {
 
-  private apiUrl:string='http://localhost:4200/';
+  private apiUrl:string='';
   private baseUrl:string='/api/trip';
-  constructor(private httpClient:Http,private configService:ConfigService) {
+  constructor(private httpClient:Http) {
     super();
    }
    getTrips(page:number):Observable<Trip[]>{

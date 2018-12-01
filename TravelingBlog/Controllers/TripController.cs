@@ -19,6 +19,7 @@ namespace TravelingBlog.Controllers
         private readonly ClaimsPrincipal caller;
         private IUnitOfWork unitOfWork;
         private ILoggerManager logger;
+        private const int pageSize = 10;
 
         public TripController(ILoggerManager logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
@@ -42,10 +43,22 @@ namespace TravelingBlog.Controllers
                 var list = new List<TripDTO>();
                 for (int i = 0; i < trips.Count(); i++)
                 {
-                    list.Add(new TripDTO { Id = trips.ElementAt(i).Id,
+                    list.Add(new TripDTO
+                    {
+                        Id = trips.ElementAt(i).Id,
                         Name = trips.ElementAt(i).Name,
                         IsDone = trips.ElementAt(i).IsDone,
-                        UserId = trips.ElementAt(i).UserInfoId});
+                        User = new UserInfoDTO
+                        {
+                            Id = trips.ElementAt(i).UserInfo.Id,
+                            FirstName = trips.ElementAt(i).UserInfo.FirstName,
+                            LastName = trips.ElementAt(i).UserInfo.LastName,
+                            Phone = trips.ElementAt(i).UserInfo.Phone,
+                            CountryId = trips.ElementAt(i).UserInfo.CountryId,
+                            PictureUrl = trips.ElementAt(i).UserInfo.Identity.PictureUrl,
+                            FacebookId = trips.ElementAt(i).UserInfo.Identity.FacebookId
+                        }
+                    });
                 }
                 return Ok(list);
             }
@@ -68,7 +81,15 @@ namespace TravelingBlog.Controllers
                     return NotFound();
                 }
                 logger.LogInfo("Return trip with id=" + id);
-                return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone,UserId = trip.UserInfoId });
+                return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone,User = new UserInfoDTO {
+                    Id = trip.UserInfo.Id,
+                    FirstName = trip.UserInfo.FirstName,
+                    LastName = trip.UserInfo.LastName,
+                    Phone = trip.UserInfo.Phone,
+                    CountryId = trip.UserInfo.CountryId,
+                    PictureUrl = trip.UserInfo.Identity.PictureUrl,
+                    FacebookId = trip.UserInfo.Identity.FacebookId
+                } });
             }
             catch(Exception ex)
             {
@@ -130,7 +151,15 @@ namespace TravelingBlog.Controllers
                 var user = await unitOfWork.Users.GetUserByIdentityId(userId.Value);
                 trip.UserInfo = user;
                 unitOfWork.Trips.Add(trip);
-                model.UserId = user.Id;
+                model.User = new UserInfoDTO {
+                    Id = trip.UserInfo.Id,
+                    FirstName = trip.UserInfo.FirstName,
+                    LastName = trip.UserInfo.LastName,
+                    Phone = trip.UserInfo.Phone,
+                    CountryId = trip.UserInfo.CountryId,
+                    PictureUrl = trip.UserInfo.Identity.PictureUrl,
+                    FacebookId = trip.UserInfo.Identity.FacebookId
+                };
                 return Ok(model);
             }
             catch(Exception ex)
