@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,HostListener } from '@angular/core';
 import { TripService } from '../trip.service';
 import { Trip } from '../models/trip';
 @Component({
@@ -19,17 +19,28 @@ export class TriplistComponent implements OnInit {
   loadTrips()
   {
     this.tripService.getTrips(this.page)
-    .subscribe((resp:Trip[])=>this.trips = resp);
+    .subscribe((resp:Trip[])=>this.onSuccess(resp));
   }
-  onSuccess(res:Trip[]){
-    console.log(res);
-    if(res!=undefined){
-      this.trips = res;
+  @HostListener("window:scroll", [])
+  onscroll():void{
+    if(this.bottomReached()){
+      this.page+=1;
+      this.loadTrips();
     }
   }
-  onScroll(){
-    console.log("Scrolled");
-    this.page = this.page+1;
-    this.loadTrips();
+  bottomReached(): boolean {
+    return (window.innerHeight + window.scrollY) >= document.body.offsetHeight-200;
   }
+  onSuccess(res:Trip[]) {  
+    console.log(res);  
+    if (res != undefined) {  
+      res.forEach(item => {  
+        this.trips.push(item);  
+      });  
+    }  
+  }  /*
+  getPage(p:number){
+    this.page = p;
+    this.loadTrips();
+  }*/
 }

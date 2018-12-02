@@ -1,5 +1,6 @@
 <app-spinner [isRunning]="!trips"></app-spinner>
-<body infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="true">  
+<!-- | paginate: { id:'server', itemsPerPage: 10, currentPage: page ,totalItems:11}-->
+<body>  
   <div class="toBeCentered" *ngFor="let trip of trips">
       <article class="post">
           <header >
@@ -23,4 +24,5 @@
           </footer>
       </article>      
   </div>
+  <!--<pagination-controls (pageChange)="getPage($event)" id="server"></pagination-controls>-->
 </body>

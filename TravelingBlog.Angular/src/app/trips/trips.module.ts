@@ -4,14 +4,14 @@ import { TriplistComponent } from './triplist/triplist.component';
 import { FulltripComponent } from './fulltrip/fulltrip.component';
 import { TripService } from './trip.service';
 import { SharedModule } from '../shared/modules/shared.module';
-import {InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 @NgModule({
   declarations: [TriplistComponent, FulltripComponent],
   imports: [
     CommonModule,
     SharedModule,
-    InfiniteScrollModule
+    NgxPaginationModule
   ],
   exports:[TriplistComponent,FulltripComponent],
   providers:[TripService]
