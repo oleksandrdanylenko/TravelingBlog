@@ -12,7 +12,6 @@ namespace TravelingBlog.BusinessLogicLayer.ViewModels.DTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }
-        public int? CountryId { get; set; }
         public string PictureUrl { get; set; }
         public long? FacebookId { get; set; }
     }

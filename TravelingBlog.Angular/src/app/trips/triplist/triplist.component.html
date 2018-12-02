@@ -1,17 +1,16 @@
-<body>
-  <div class="toBeCentered">
+<app-spinner [isRunning]="!trips"></app-spinner>
+<body infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="true">  
+  <div class="toBeCentered" *ngFor="let trip of trips">
       <article class="post">
           <header >
               <div class="title">
-                  <h2><a href="#">Lorem ipsum</a></h2>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vulputate ornare lectus sed hendrerit. Cras sollicitudin neque dui, ac pretium risus placerat a. Suspendisse viverra diam sed scelerisque congue</p>
-              </div>
+                  <h2><a href="#">{{trip.name}}</a></h2>
+                </div>
               <div class="meta">
-                  <time class="published" datetime="2018-11-01">November 1, 2018</time>
-                  <a href="#" class="author"><span class="name">Naruto Uzumaki</span><img src="../../assets/images/triptests/icon.png" alt="" /></a>
+                  <a href="#" class="author"><span class="name">{{trip.user.firstName}} {{trip.user.lastName}}</span><img src="{{trip.user.pictureUrl}}" alt="" /></a>
               </div>
           </header>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vulputate ornare lectus sed hendrerit. Cras sollicitudin neque dui, ac pretium risus placerat a. Suspendisse viverra diam sed scelerisque congue. Phasellus volutpat, risus nec volutpat cursus, leo tortor eleifend diam, in viverra augue ex vitae neque. Donec placerat accumsan lacus. Vestibulum mauris risus, auctor vitae nisl eget, molestie mattis mi. Sed gravida nisi quis felis porta dictum. Mauris a nibh non justo fringilla euismod. Sed eleifend, felis vitae tempor blandit, dui neque mattis nisi, eu sollicitudin massa quam mollis metus. </p>
+          <p>{{trip.description}}</p>
           <footer>
               <ul class="actions">
                   <li><a href="#" class="button large">Continue Reading</a></li>
@@ -22,7 +21,6 @@
                   <li><a href="#" class="icon fa-comment">128</a></li>
               </ul>
           </footer>
-      </article>
-      
+      </article>      
   </div>
 </body>

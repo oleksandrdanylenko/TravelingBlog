@@ -7,6 +7,7 @@ namespace TravelingBlog.BusinessLogicLayer.Contracts.Repositories
 {
     public interface ITripRepository : IRepository<Trip>
     {
+        Task<IEnumerable<Trip>> GetAllTripsAsync(int page,int pagesize);
         Task<IEnumerable<Trip>> GetAllTripsAsync();
         Task<Trip> GetTripByIdAsync(int tripId);
         bool IsUserCreator(int userId, int tripId);

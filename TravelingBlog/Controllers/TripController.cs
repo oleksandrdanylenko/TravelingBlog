@@ -29,11 +29,11 @@ namespace TravelingBlog.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllTrips()
+        public async Task<IActionResult> GetAllTrips(int page = 1)
         {
             try
             {
-                var trips = await unitOfWork.Trips.GetAllTripsAsync();
+                var trips = await unitOfWork.Trips.GetAllTripsAsync(page,pageSize);
                 if (trips == null)
                 {
                     logger.LogInfo("TripsNotFound");
@@ -48,13 +48,13 @@ namespace TravelingBlog.Controllers
                         Id = trips.ElementAt(i).Id,
                         Name = trips.ElementAt(i).Name,
                         IsDone = trips.ElementAt(i).IsDone,
+                        Description = trips.ElementAt(i).Description,
                         User = new UserInfoDTO
                         {
                             Id = trips.ElementAt(i).UserInfo.Id,
                             FirstName = trips.ElementAt(i).UserInfo.FirstName,
                             LastName = trips.ElementAt(i).UserInfo.LastName,
                             Phone = trips.ElementAt(i).UserInfo.Phone,
-                            CountryId = trips.ElementAt(i).UserInfo.CountryId,
                             PictureUrl = trips.ElementAt(i).UserInfo.Identity.PictureUrl,
                             FacebookId = trips.ElementAt(i).UserInfo.Identity.FacebookId
                         }
@@ -81,12 +81,11 @@ namespace TravelingBlog.Controllers
                     return NotFound();
                 }
                 logger.LogInfo("Return trip with id=" + id);
-                return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone,User = new UserInfoDTO {
+                return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, Description = trip.Description,IsDone = trip.IsDone,User = new UserInfoDTO {
                     Id = trip.UserInfo.Id,
                     FirstName = trip.UserInfo.FirstName,
                     LastName = trip.UserInfo.LastName,
                     Phone = trip.UserInfo.Phone,
-                    CountryId = trip.UserInfo.CountryId,
                     PictureUrl = trip.UserInfo.Identity.PictureUrl,
                     FacebookId = trip.UserInfo.Identity.FacebookId
                 } });
@@ -146,17 +145,17 @@ namespace TravelingBlog.Controllers
                     logger.LogError($"Object state is not valid");
                     return BadRequest("Trip object is invalid");
                 }
-                var trip = new Trip { Name = model.Name, IsDone = model.IsDone };
+                var trip = new Trip { Name = model.Name, IsDone = model.IsDone,Description = model.Description };
                 var userId = caller.Claims.Single(c => c.Type == "id");
                 var user = await unitOfWork.Users.GetUserByIdentityId(userId.Value);
                 trip.UserInfo = user;
                 unitOfWork.Trips.Add(trip);
+                await unitOfWork.CompleteAsync();
                 model.User = new UserInfoDTO {
                     Id = trip.UserInfo.Id,
                     FirstName = trip.UserInfo.FirstName,
                     LastName = trip.UserInfo.LastName,
                     Phone = trip.UserInfo.Phone,
-                    CountryId = trip.UserInfo.CountryId,
                     PictureUrl = trip.UserInfo.Identity.PictureUrl,
                     FacebookId = trip.UserInfo.Identity.FacebookId
                 };
@@ -183,6 +182,7 @@ namespace TravelingBlog.Controllers
                 if (unitOfWork.Trips.IsUserCreator(user.Id, id)||caller.IsInRole("admin"))
                 {
                     unitOfWork.Trips.Remove(trip);
+                    await unitOfWork.CompleteAsync();
                     return NoContent();
                 }
                 return StatusCode(403, "Forbidden");
@@ -218,7 +218,11 @@ namespace TravelingBlog.Controllers
                 var user = await unitOfWork.Users.GetUserByIdentityId(userid.Value);
                 if (unitOfWork.Trips.IsUserCreator(user.Id, id)||caller.IsInRole("admin"))
                 {
+                    trip.Name = model.Name;
+                    trip.Description = model.Description;
+                    trip.IsDone = model.IsDone;
                     unitOfWork.Trips.Update(trip);
+                    await unitOfWork.CompleteAsync();
                     return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone});
                 }
                 return StatusCode(403, "Forbidden");

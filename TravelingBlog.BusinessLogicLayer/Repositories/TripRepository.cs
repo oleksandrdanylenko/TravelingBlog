@@ -17,12 +17,22 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
 
         public async Task<Trip> GetTripByIdAsync(int tripId)
         {
-            return await SingleOrDefaultAsync(t => t.Id.Equals(tripId));
+            return await ApplicationDbContext.Trips
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country).SingleOrDefaultAsync(t => t.Id.Equals(tripId));
         }
-
+        public async Task<IEnumerable<Trip>> GetAllTripsAsync(int page,int pagesize)
+        {
+            var trips = await ApplicationDbContext.Trips
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country)
+                .Skip(page*pagesize - pagesize).Take(pagesize)
+                .ToListAsync();
+            return trips;
+        }
         public async Task<IEnumerable<Trip>> GetAllTripsAsync()
         {
-            var trips = await ApplicationDbContext.Set<Trip>()
+            var trips = await ApplicationDbContext.Trips
                 .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
                 .Include(t => t.UserInfo).ThenInclude(u => u.Country)
                 .ToListAsync();

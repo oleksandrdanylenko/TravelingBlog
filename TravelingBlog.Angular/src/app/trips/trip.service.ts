@@ -3,11 +3,9 @@ import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { BaseService } from "../shared/services/base.service";
 
 import { Observable } from 'rxjs/Rx';
-import { BehaviorSubject } from 'rxjs/Rx';
-import '../../rxjs-operators';
-import { HttpClient } from 'selenium-webdriver/http';
-import { ConfigService } from '../shared/utils/config.service';
+import '../rxjs-operators';
 import { Trip } from './models/trip';
+import { ConfigService } from '../shared/utils/config.service';
 
 
 @Injectable()
@@ -15,8 +13,9 @@ export class TripService extends BaseService {
 
   private apiUrl:string='';
   private baseUrl:string='/api/trip';
-  constructor(private httpClient:Http) {
+  constructor(private httpClient:Http,private configService:ConfigService) {
     super();
+    this.apiUrl=this.configService.getApiURI();
    }
    getTrips(page:number):Observable<Trip[]>{
     let headers = this.getHeaders();
@@ -38,7 +37,7 @@ export class TripService extends BaseService {
      .map(Response=>Response.json())
      .catch(this.handleError);
    }
-   updateHero
+   
    getHeaders(){
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
