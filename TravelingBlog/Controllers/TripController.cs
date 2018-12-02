@@ -20,7 +20,6 @@ namespace TravelingBlog.Controllers
         private IUnitOfWork unitOfWork;
         private ILoggerManager logger;
         private const int pageSize = 10;
-
         public TripController(ILoggerManager logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
@@ -33,7 +32,8 @@ namespace TravelingBlog.Controllers
         {
             try
             {
-                var trips = await unitOfWork.Trips.GetAllTripsAsync(page,pageSize);
+                IEnumerable<Trip> trips = new List<Trip>();                
+                trips = await unitOfWork.Trips.GetAllTripsAsync(page, pageSize);                
                 if (trips == null)
                 {
                     logger.LogInfo("TripsNotFound");

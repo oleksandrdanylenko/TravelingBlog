@@ -11,6 +11,7 @@ export class TriplistComponent implements OnInit {
   trips:Trip[] = [];
   trip:Trip = new Trip();
   page:number = 1;
+  isEmpty:boolean = false;
   constructor(private tripService:TripService) { }
 
   ngOnInit() {
@@ -23,22 +24,27 @@ export class TriplistComponent implements OnInit {
   }
   @HostListener("window:scroll", [])
   onscroll():void{
-    if(this.bottomReached()){
+    if(this.bottomReached()&&!this.isEmpty){
       this.page+=1;
       this.loadTrips();
     }
   }
   bottomReached(): boolean {
-    return (window.innerHeight + window.scrollY) >= document.body.offsetHeight-200;
+    return (window.innerHeight + window.scrollY) >= document.body.offsetHeight;
   }
   onSuccess(res:Trip[]) {  
     console.log(res);  
-    if (res != undefined) {  
+    if (res != undefined&&res.length!=0) {  
       res.forEach(item => {  
         this.trips.push(item);  
       });  
+    }
+    else
+    {
+      this.isEmpty = true;
     }  
-  }  /*
+  } 
+  /*
   getPage(p:number){
     this.page = p;
     this.loadTrips();

@@ -7740,6 +7740,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/http */ "./node_modules/@angular/http/esm5/http.js");
 /* harmony import */ var _shared_services_base_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/services/base.service */ "./src/app/shared/services/base.service.ts");
 /* harmony import */ var _rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../rxjs-operators */ "./src/app/rxjs-operators.js");
+/* harmony import */ var _shared_utils_config_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../shared/utils/config.service */ "./src/app/shared/utils/config.service.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7763,13 +7764,16 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 
 
 
+
 var TripService = (function (_super) {
     __extends(TripService, _super);
-    function TripService(httpClient) {
+    function TripService(httpClient, configService) {
         var _this = _super.call(this) || this;
         _this.httpClient = httpClient;
+        _this.configService = configService;
         _this.apiUrl = '';
         _this.baseUrl = '/api/trip';
+        _this.apiUrl = _this.configService.getApiURI();
         return _this;
     }
     TripService.prototype.getTrips = function (page) {
@@ -7799,7 +7803,7 @@ var TripService = (function (_super) {
     };
     TripService = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"])(),
-        __metadata("design:paramtypes", [_angular_http__WEBPACK_IMPORTED_MODULE_1__["Http"]])
+        __metadata("design:paramtypes", [_angular_http__WEBPACK_IMPORTED_MODULE_1__["Http"], _shared_utils_config_service__WEBPACK_IMPORTED_MODULE_4__["ConfigService"]])
     ], TripService);
     return TripService;
 }(_shared_services_base_service__WEBPACK_IMPORTED_MODULE_2__["BaseService"]));
@@ -7815,7 +7819,7 @@ var TripService = (function (_super) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<body>\n  <div class=\"toBeCentered\">\n      <article class=\"post\">\n          <header >\n              <div class=\"title\">\n                  <h2><a href=\"#\">Lorem ipsum</a></h2>\n                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vulputate ornare lectus sed hendrerit. Cras sollicitudin neque dui, ac pretium risus placerat a. Suspendisse viverra diam sed scelerisque congue</p>\n              </div>\n              <div class=\"meta\">\n                  <time class=\"published\" datetime=\"2018-11-01\">November 1, 2018</time>\n                  <a href=\"#\" class=\"author\"><span class=\"name\">Naruto Uzumaki</span><img src=\"../../assets/images/triptests/icon.png\" alt=\"\" /></a>\n              </div>\n          </header>\n          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vulputate ornare lectus sed hendrerit. Cras sollicitudin neque dui, ac pretium risus placerat a. Suspendisse viverra diam sed scelerisque congue. Phasellus volutpat, risus nec volutpat cursus, leo tortor eleifend diam, in viverra augue ex vitae neque. Donec placerat accumsan lacus. Vestibulum mauris risus, auctor vitae nisl eget, molestie mattis mi. Sed gravida nisi quis felis porta dictum. Mauris a nibh non justo fringilla euismod. Sed eleifend, felis vitae tempor blandit, dui neque mattis nisi, eu sollicitudin massa quam mollis metus. </p>\n          <footer>\n              <ul class=\"actions\">\n                  <li><a href=\"#\" class=\"button large\">Continue Reading</a></li>\n              </ul>\n              <ul class=\"stats\">\n                  <li><a href=\"#\">General</a></li>\n                  <li><a href=\"#\" class=\"icon fa-heart\">28</a></li>\n                  <li><a href=\"#\" class=\"icon fa-comment\">128</a></li>\n              </ul>\n          </footer>\n      </article>      \n  </div>\n</body>"
+module.exports = "<app-spinner [isRunning]=\"!trips\"></app-spinner>\n<!-- | paginate: { id:'server', itemsPerPage: 10, currentPage: page ,totalItems:11}-->\n<body>  \n  <div class=\"toBeCentered\" *ngFor=\"let trip of trips\">\n      <article class=\"post\">\n          <header >\n              <div class=\"title\">\n                  <h2><a href=\"#\">{{trip.name}}</a></h2>\n                </div>\n              <div class=\"meta\">\n                  <a href=\"#\" class=\"author\"><span class=\"name\">{{trip.user.firstName}} {{trip.user.lastName}}</span><img src=\"{{trip.user.pictureUrl}}\" alt=\"\" /></a>\n              </div>\n          </header>\n          <p>{{trip.description}}</p>\n          <footer>\n              <ul class=\"actions\">\n                  <li><a href=\"#\" class=\"button large\">Continue Reading</a></li>\n              </ul>\n              <ul class=\"stats\">\n                  <li><a href=\"#\">General</a></li>\n                  <li><a href=\"#\" class=\"icon fa-heart\">28</a></li>\n                  <li><a href=\"#\" class=\"icon fa-comment\">128</a></li>\n              </ul>\n          </footer>\n      </article>      \n  </div>\n  <!--<pagination-controls (pageChange)=\"getPage($event)\" id=\"server\"></pagination-controls>-->\n</body>"
 
 /***/ }),
 
@@ -7858,16 +7862,46 @@ var __metadata = (undefined && undefined.__metadata) || function (k, v) {
 var TriplistComponent = (function () {
     function TriplistComponent(tripService) {
         this.tripService = tripService;
+        this.trips = [];
         this.trip = new _models_trip__WEBPACK_IMPORTED_MODULE_2__["Trip"]();
+        this.page = 1;
+        this.isEmpty = false;
     }
     TriplistComponent.prototype.ngOnInit = function () {
-        //this.loadTrips();
-    }; /*
-    loadTrips()
-    {
-      this.tripService.getTrips(1)
-      .subscribe((resp:Trip[])=>this.trips = resp);
-    }*/
+        this.loadTrips();
+    };
+    TriplistComponent.prototype.loadTrips = function () {
+        var _this = this;
+        this.tripService.getTrips(this.page)
+            .subscribe(function (resp) { return _this.onSuccess(resp); });
+    };
+    TriplistComponent.prototype.onscroll = function () {
+        if (this.bottomReached() && !this.isEmpty) {
+            this.page += 1;
+            this.loadTrips();
+        }
+    };
+    TriplistComponent.prototype.bottomReached = function () {
+        return (window.innerHeight + window.scrollY) >= document.body.offsetHeight;
+    };
+    TriplistComponent.prototype.onSuccess = function (res) {
+        var _this = this;
+        console.log(res);
+        if (res != undefined && res.length != 0) {
+            res.forEach(function (item) {
+                _this.trips.push(item);
+            });
+        }
+        else {
+            this.isEmpty = true;
+        }
+    };
+    __decorate([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["HostListener"])("window:scroll", []),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", []),
+        __metadata("design:returntype", void 0)
+    ], TriplistComponent.prototype, "onscroll", null);
     TriplistComponent = __decorate([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"])({
             selector: 'app-triplist',
@@ -7898,12 +7932,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _triplist_triplist_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./triplist/triplist.component */ "./src/app/trips/triplist/triplist.component.ts");
 /* harmony import */ var _fulltrip_fulltrip_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./fulltrip/fulltrip.component */ "./src/app/trips/fulltrip/fulltrip.component.ts");
 /* harmony import */ var _trip_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./trip.service */ "./src/app/trips/trip.service.ts");
+/* harmony import */ var _shared_modules_shared_module__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../shared/modules/shared.module */ "./src/app/shared/modules/shared.module.ts");
+/* harmony import */ var ngx_pagination__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ngx-pagination */ "./node_modules/ngx-pagination/dist/ngx-pagination.js");
 var __decorate = (undefined && undefined.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -7916,7 +7954,9 @@ var TripsModule = (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"])({
             declarations: [_triplist_triplist_component__WEBPACK_IMPORTED_MODULE_2__["TriplistComponent"], _fulltrip_fulltrip_component__WEBPACK_IMPORTED_MODULE_3__["FulltripComponent"]],
             imports: [
-                _angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"]
+                _angular_common__WEBPACK_IMPORTED_MODULE_1__["CommonModule"],
+                _shared_modules_shared_module__WEBPACK_IMPORTED_MODULE_5__["SharedModule"],
+                ngx_pagination__WEBPACK_IMPORTED_MODULE_6__["NgxPaginationModule"]
             ],
             exports: [_triplist_triplist_component__WEBPACK_IMPORTED_MODULE_2__["TriplistComponent"], _fulltrip_fulltrip_component__WEBPACK_IMPORTED_MODULE_3__["FulltripComponent"]],
             providers: [_trip_service__WEBPACK_IMPORTED_MODULE_4__["TripService"]]
