@@ -33,12 +33,12 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
                 .ToList();
         }
 
-        public IQueryable<PostBlog> SearchBlog(PagingModel attribute)
+        public IQueryable<PostBlog> SearchBlog(Search searchQuery)
         {
             var result = ApplicationDbContext.PostBlogs.Where(x =>
-                x.Name.ToLower().Contains(attribute.SearchQuery) || x.Plot.ToLower().Contains(attribute.SearchQuery))
-                .Skip(attribute.PageSize * (attribute.PageNumber - 1))
-                .Take(attribute.PageSize);
+                x.Name.ToLower().Contains(searchQuery.SearchQuery) || x.Plot.ToLower().Contains(searchQuery.SearchQuery))
+                .Skip(searchQuery.PageSize * (searchQuery.PageNumber - 1))
+                .Take(searchQuery.PageSize);
 
             return result;
         }

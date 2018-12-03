@@ -18,6 +18,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 
 import { ConfigService } from './shared/utils/config.service';
 import { FooterComponent } from './footer/footer.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { FooterComponent } from './footer/footer.component';
     HeaderComponent,
     HomeComponent,
     FooterComponent,
+    SearchComponent,
   ],
   imports: [
     AccountModule,

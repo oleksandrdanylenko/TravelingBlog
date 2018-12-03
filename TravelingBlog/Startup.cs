@@ -127,7 +127,7 @@ namespace TravelingBlog
                 app.UseDeveloperExceptionPage();
             }
 
-            app.ConfigureCustomExceptionMiddleware();
+            //app.ConfigureCustomExceptionMiddleware();
             app.UseAuthentication();
             app.UseDefaultFiles();
 

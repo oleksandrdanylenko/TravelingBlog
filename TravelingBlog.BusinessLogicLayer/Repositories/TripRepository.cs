@@ -23,13 +23,13 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             return await SingleOrDefaultAsync(t => t.Id.Equals(tripId));
         }
 
-        public async Task<IEnumerable<Trip>> GetAllTripsAsync(PagingModel attribute)
+        public async Task<IEnumerable<Trip>> GetAllTripsAsync(PagingModel pageModel)
         {
             var trips = await FindAllAsync();
             return trips.OrderBy(t => t.Name)
                 .ThenBy(x=>x.Description)
-                .Skip(attribute.PageSize * (attribute.PageNumber - 1))
-                .Take(attribute.PageSize)
+                .Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
+                .Take(pageModel.PageSize)
                 .ToList();
         }
 
@@ -49,12 +49,12 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             return result;
         }
 
-        public IEnumerable<Trip> FilterTripsByCountry(string country)
+        public IEnumerable<Trip> FilterTripsByCountry(PagingModel pageModel)
         {
             //var result = ApplicationDbContext.Countries.Where(o => o.Name == country)
             //    .Include(c => c.CountryTrips)
             //    .ThenInclude(m => m.Trip);
-           return ApplicationDbContext.Trips.Where(i => i.CountryTrips.Any(t => t.Country.Name == country))
+           return ApplicationDbContext.Trips.Where(i => i.CountryTrips.Any(t => t.TripId == t.CountryId))
                 .ToList();
             //return result.SelectMany(i=>i.CountryTrips).Select(i=>i.Trip).ToList();
         }

@@ -10,11 +10,11 @@ namespace TravelingBlog.BusinessLogicLayer.Contracts.Repositories
 {
     public interface ITripRepository : IRepository<Trip>
     {
-        Task<IEnumerable<Trip>> GetAllTripsAsync(PagingModel attribute);
+        Task<IEnumerable<Trip>> GetAllTripsAsync(PagingModel pageModel);
         Task<Trip> GetTripByIdAsync(int tripId);
         bool IsUserCreator(int userId, int tripId);
         Trip GetTripWithPostBlogs(int id);
         IQueryable<Trip> SearchTrips(string search);
-        IEnumerable<Trip> FilterTripsByCountry(string country);
+        IEnumerable<Trip> FilterTripsByCountry(PagingModel attribute);
     }
 }
