@@ -43,10 +43,5 @@ export class TriplistComponent implements OnInit {
     {
       this.isEmpty = true;
     }  
-  } 
-  /*
-  getPage(p:number){
-    this.page = p;
-    this.loadTrips();
-  }*/
+  }
 }

@@ -57,7 +57,7 @@ namespace TravelingBlog.Controllers
                             Phone = trips.ElementAt(i).UserInfo.Phone,
                             PictureUrl = trips.ElementAt(i).UserInfo.Identity.PictureUrl,
                             FacebookId = trips.ElementAt(i).UserInfo.Identity.FacebookId
-                        }
+                        }                        
                     });
                 }
                 return Ok(list);
@@ -119,7 +119,7 @@ namespace TravelingBlog.Controllers
                         Name = trip.PostBlogs.ElementAt(i).Name,
                         Plot = trip.PostBlogs.ElementAt(i).Plot,
                         TripId = trip.PostBlogs.ElementAt(i).TripId,
-                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation
+                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation.Date.ToString()
                     });
                 }
                 return Ok(new TripDetailsDTO(trip) {PostBlogs = list });
