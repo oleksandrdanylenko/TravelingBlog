@@ -24,9 +24,10 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
         public async Task<IEnumerable<Trip>> GetAllTripsAsync(int page,int pagesize)
         {
             var trips = await ApplicationDbContext.Trips
+                .Skip(page*pagesize - pagesize)
+                .Take(pagesize)
                 .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
-                .Include(t => t.UserInfo).ThenInclude(u => u.Country)
-                .Skip(page*pagesize - pagesize).Take(pagesize)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country)                
                 .ToListAsync();
             return trips;
         }
