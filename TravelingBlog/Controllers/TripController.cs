@@ -29,11 +29,11 @@ namespace TravelingBlog.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllTrips()
+        public async Task<IActionResult> GetAllTrips(PagingModel paging)
         {
             try
             {
-                var trips = await unitOfWork.Trips.GetAllTripsAsync(new PagingModel());
+                var trips = await unitOfWork.Trips.GetAllTripsAsync(paging);
                 if (trips == null)
                 {
                     logger.LogInfo("TripsNotFound");

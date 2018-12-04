@@ -42,21 +42,17 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             return ApplicationDbContext.Trips.Include(t => t.PostBlogs).SingleOrDefault(t => t.Id == id);
         }
 
-        public IQueryable<Trip> SearchTrips(string search)
+        public IQueryable<Trip> SearchTrips(Search searchQuery)
         {
-            var result = ApplicationDbContext.Trips.Where(x => x.Name.ToLower().Contains(search));
+            var word = searchQuery.SearchQuery;
+            var result = ApplicationDbContext
+                .Trips.Where(x => x.Name.ToLower().Contains(word)
+                || x.Description.ToLower().Contains(word))
+                .Skip(searchQuery.PageSize * (searchQuery.PageNumber - 1))
+                .Take(searchQuery.PageSize);
 
             return result;
         }
 
-        public IEnumerable<Trip> FilterTripsByCountry(PagingModel pageModel)
-        {
-            //var result = ApplicationDbContext.Countries.Where(o => o.Name == country)
-            //    .Include(c => c.CountryTrips)
-            //    .ThenInclude(m => m.Trip);
-           return ApplicationDbContext.Trips.Where(i => i.CountryTrips.Any(t => t.TripId == t.CountryId))
-                .ToList();
-            //return result.SelectMany(i=>i.CountryTrips).Select(i=>i.Trip).ToList();
-        }
     }
 }

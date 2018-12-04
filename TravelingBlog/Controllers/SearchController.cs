@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -27,15 +28,15 @@ namespace TravelingBlog.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetTripsBySearchResult(Search searchQuery)
+        public async Task<IActionResult> GetTripsBySearchResult([FromQuery] Search search)
         {
             try
             {
-                var result = UnitOfWork.Trips.SearchTrips(searchQuery.SearchQuery);
+                var result = UnitOfWork.Trips.SearchTrips(search);
                 Logger.LogInfo("Search success");
                 if (result == null)
                 {
-                    var noresult = await UnitOfWork.Trips.GetAllTripsAsync(searchQuery);
+                    var noresult = await UnitOfWork.Trips.GetAllTripsAsync(search);
                     Logger.LogInfo("Bad search line");
                     return Ok(noresult);
                 }
@@ -48,23 +49,5 @@ namespace TravelingBlog.Controllers
             }
 
         }
-
-        //[HttpGet]
-        //[Route("api/search/filterbycountries")]
-        //public IActionResult FilterResult(PagingModel attribute)
-        //{
-        //    try
-        //    {
-        //        var result = UnitOfWork.Trips.FilterTripsByCountry();
-
-        //        return Ok(result);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Console.WriteLine(e);
-        //        return StatusCode(500);
-        //    }
-            
-        //}
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TravelingBlog.DataAcceesLayer.Models.Entities;
 using TravelingBlog.BusinessLogicLayer.ViewModels.DTO;
 using System.Collections.Generic;
@@ -14,7 +15,6 @@ namespace TravelingBlog.BusinessLogicLayer.Contracts.Repositories
         Task<Trip> GetTripByIdAsync(int tripId);
         bool IsUserCreator(int userId, int tripId);
         Trip GetTripWithPostBlogs(int id);
-        IQueryable<Trip> SearchTrips(string search);
-        IEnumerable<Trip> FilterTripsByCountry(PagingModel attribute);
+        IQueryable<Trip> SearchTrips(Search searchQuery);
     }
 }

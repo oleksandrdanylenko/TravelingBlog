@@ -11,7 +11,7 @@ namespace TravelingBlog.BusinessLogicLayer.Contracts.Repositories
     public interface IPostBlogRepository: IRepository<PostBlog>
     {
         Task<IEnumerable<PostBlog>> GetAllPostBlogsAsync(PagingModel attribute);
-        IQueryable<PostBlog> SearchBlog(PagingModel attribute);
+        IQueryable<PostBlog> SearchBlog(Search searchQuery);
         Task<PostBlog> GetPostBlogByIdAsync(int postBlogId);
     }
 }
