@@ -817,4 +817,8 @@ typings/
 
 # FuseBox cache
 .fusebox/
-TravelingBlog/wwwroot/
+
+#alexel37
+TravelingBlog.Angular/package-lock.json
+TravelingBlog/wwwroot/*
+

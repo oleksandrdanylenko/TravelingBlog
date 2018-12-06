@@ -6,6 +6,7 @@ using TravelingBlog.DataAcceesLayer.Models.Entities;
 using TravelingBlog.DataAcceesLayer.Data;
 using System.Threading.Tasks;
 using TravelingBlog.BusinessLogicLayer.ResourseHelpers;
+using TravelingBlog.BusinessLogicLayer.ViewModels.TripViewModels;
 
 namespace TravelingBlog.BusinessLogicLayer.Repositories
 {
@@ -51,6 +52,17 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
 
             return result;
         }
-
+        public async Task<IEnumerable<TripDetail>> GetUserTripsAsync(string id)
+        {
+            List<TripDetail> trips = new List<TripDetail>();
+            var user = await ApplicationDbContext.UserInfoes.Include(c => c.Identity).SingleAsync(c => c.Identity.Id == id);
+            var userTrips = ApplicationDbContext.Trips.Where(x => x.UserInfoId==user.Id);
+            foreach(var trip in userTrips)
+            {
+                trips.Add(new TripDetail { Description = trip.Description, IsDone = trip.IsDone, Name = trip.Name, Id = trip.Id });
+            }
+            
+            return trips;
+        }
     }
 }
