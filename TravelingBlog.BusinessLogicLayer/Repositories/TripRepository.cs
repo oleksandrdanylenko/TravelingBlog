@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TravelingBlog.BusinessLogicLayer.Contracts.Repositories;
 using Microsoft.EntityFrameworkCore;
 using TravelingBlog.DataAcceesLayer.Models.Entities;
 using TravelingBlog.DataAcceesLayer.Data;
 using System.Threading.Tasks;
-using Remotion.Linq.Clauses;
 using TravelingBlog.BusinessLogicLayer.ResourseHelpers;
 
 namespace TravelingBlog.BusinessLogicLayer.Repositories
@@ -23,14 +20,15 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             return await SingleOrDefaultAsync(t => t.Id.Equals(tripId));
         }
 
-        public async Task<IEnumerable<Trip>> GetAllTripsAsync(PagingModel pageModel)
+        public IList<Trip> GetAllTripsAsync(PagingModel pageModel, out int total)
         {
-            var trips = await FindAllAsync();
-            return trips.OrderBy(t => t.Name)
-                .ThenBy(x=>x.Description)
-                .Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
-                .Take(pageModel.PageSize)
-                .ToList();
+            var tripq = ApplicationDbContext.Trips.OrderBy(t => t.Name)
+                .ThenBy(x => x.Description).ToList();
+            total = tripq.Count();
+            var data = tripq.Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
+                .Take(pageModel.PageSize);
+            return data.ToList();
+
         }
 
         public bool IsUserCreator(int userId, int tripId)

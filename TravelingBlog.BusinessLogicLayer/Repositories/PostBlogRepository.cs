@@ -19,18 +19,15 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             return await SingleOrDefaultAsync(c => c.Id.Equals(postBlogId));
         }
 
-        public async Task<IEnumerable<PostBlog>> GetAllPostBlogsAsync(PagingModel attribute)
+        public IList<PostBlog> GetAllPostBlogsAsync(PagingModel pageModel, out int total)
         {
-
-            var postBlogs = await FindAllAsync();
-
-            return postBlogs
-                .OrderBy(pb => pb.Name)
-                .ThenBy(pb => pb.Id)
-                .ThenBy(pb => pb.DateOfCreation)
-                .Skip(attribute.PageSize * (attribute.PageNumber - 1))
-                .Take(attribute.PageSize)
-                .ToList();
+            var blogList = ApplicationDbContext.PostBlogs.OrderBy(t => t.Name)
+                .ThenBy(x => x.Plot).ToList();
+            total = blogList.Count();
+            var blogs = blogList.Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
+                .Take(pageModel.PageSize);
+            return blogs.ToList();
+           
         }
 
         public IQueryable<PostBlog> SearchBlog(Search searchQuery)

@@ -36,19 +36,19 @@ namespace TravelingBlog.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllBlogs(PagingModel attribute)
+        public IActionResult GetAllBlogs(PagingModel attribute)
         {
             try
             {
 
-                var blog = await unitOfWork.PostBlogs.GetAllPostBlogsAsync(attribute);
+                var blog = unitOfWork.PostBlogs.GetAllPostBlogsAsync(attribute, out var total);
                 if (blog == null)
                 {
                     logger.LogInfo("TripsNotFound");
                     return NotFound();
                 }
                 logger.LogInfo("Return all trips from database");
-                return Ok(blog);
+                return Ok(new{Total = total, Blog = blog});
             }
             catch (Exception ex)
             {

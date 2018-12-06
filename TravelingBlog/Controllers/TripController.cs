@@ -29,11 +29,11 @@ namespace TravelingBlog.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> GetAllTrips(PagingModel paging)
+        public IActionResult GetAllTrips(PagingModel paging)
         {
             try
             {
-                var trips = await unitOfWork.Trips.GetAllTripsAsync(paging);
+                var trips = unitOfWork.Trips.GetAllTripsAsync(paging, out var total);
                 if (trips == null)
                 {
                     logger.LogInfo("TripsNotFound");
@@ -48,7 +48,7 @@ namespace TravelingBlog.Controllers
                         IsDone = trips.ElementAt(i).IsDone,
                         UserId = trips.ElementAt(i).UserInfoId});
                 }
-                return Ok(list);
+                return Ok(new {Total=total, List=list});
             }
             catch(Exception ex)
             {

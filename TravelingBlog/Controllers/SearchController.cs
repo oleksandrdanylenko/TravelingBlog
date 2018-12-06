@@ -28,7 +28,7 @@ namespace TravelingBlog.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetTripsBySearchResult([FromQuery] Search search)
+        public IActionResult GetTripsBySearchResult([FromQuery] Search search)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace TravelingBlog.Controllers
                 Logger.LogInfo("Search success");
                 if (result == null)
                 {
-                    var noresult = await UnitOfWork.Trips.GetAllTripsAsync(search);
+                    var noresult =  UnitOfWork.Trips.GetAllTripsAsync(search, out var total);
                     Logger.LogInfo("Bad search line");
                     return Ok(noresult);
                 }
