@@ -21,7 +21,7 @@ namespace TravelingBlog.Controllers
         private readonly ClaimsPrincipal caller;
         private IUnitOfWork unitOfWork;
         private ILoggerManager logger;
-
+        private const int pageSize = 10;
         public TripController(ILoggerManager logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
@@ -44,10 +44,22 @@ namespace TravelingBlog.Controllers
                 var list = new List<TripDTO>();
                 for (int i = 0; i < trips.Count(); i++)
                 {
-                    list.Add(new TripDTO { Id = trips.ElementAt(i).Id,
+                    list.Add(new TripDTO
+                    {
+                        Id = trips.ElementAt(i).Id,
                         Name = trips.ElementAt(i).Name,
                         IsDone = trips.ElementAt(i).IsDone,
-                        UserId = trips.ElementAt(i).UserInfoId});
+                        Description = trips.ElementAt(i).Description,
+                        User = new UserInfoDTO
+                        {
+                            Id = trips.ElementAt(i).UserInfo.Id,
+                            FirstName = trips.ElementAt(i).UserInfo.FirstName,
+                            LastName = trips.ElementAt(i).UserInfo.LastName,
+                            Phone = trips.ElementAt(i).UserInfo.Phone,
+                            PictureUrl = trips.ElementAt(i).UserInfo.Identity.PictureUrl,
+                            FacebookId = trips.ElementAt(i).UserInfo.Identity.FacebookId
+                        }                        
+                    });
                 }
                 return Ok(new {Total=total, List=list});
             }
@@ -70,7 +82,14 @@ namespace TravelingBlog.Controllers
                     return NotFound();
                 }
                 logger.LogInfo("Return trip with id=" + id);
-                return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone,UserId = trip.UserInfoId });
+                return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, Description = trip.Description,IsDone = trip.IsDone,User = new UserInfoDTO {
+                    Id = trip.UserInfo.Id,
+                    FirstName = trip.UserInfo.FirstName,
+                    LastName = trip.UserInfo.LastName,
+                    Phone = trip.UserInfo.Phone,
+                    PictureUrl = trip.UserInfo.Identity.PictureUrl,
+                    FacebookId = trip.UserInfo.Identity.FacebookId
+                } });
             }
             catch(Exception ex)
             {
@@ -101,7 +120,7 @@ namespace TravelingBlog.Controllers
                         Name = trip.PostBlogs.ElementAt(i).Name,
                         Plot = trip.PostBlogs.ElementAt(i).Plot,
                         TripId = trip.PostBlogs.ElementAt(i).TripId,
-                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation
+                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation.Date.ToString()
                     });
                 }
                 return Ok(new TripDetailsDTO(trip) {PostBlogs = list });
@@ -133,7 +152,16 @@ namespace TravelingBlog.Controllers
                 var user = await unitOfWork.Users.GetUserByIdentityId(userId.Value);
                 trip.UserInfo = user;
                 unitOfWork.Trips.Add(trip);
-                model.UserId = user.Id;
+                await unitOfWork.CompleteAsync();
+                model.User = new UserInfoDTO
+                {
+                    Id = trip.UserInfo.Id,
+                    FirstName = trip.UserInfo.FirstName,
+                    LastName = trip.UserInfo.LastName,
+                    Phone = trip.UserInfo.Phone,
+                    PictureUrl = trip.UserInfo.Identity.PictureUrl,
+                    FacebookId = trip.UserInfo.Identity.FacebookId
+                };
                 return Ok(model);
             }
             catch(Exception ex)
@@ -157,6 +185,7 @@ namespace TravelingBlog.Controllers
                 if (unitOfWork.Trips.IsUserCreator(user.Id, id)||caller.IsInRole("admin"))
                 {
                     unitOfWork.Trips.Remove(trip);
+                    await unitOfWork.CompleteAsync();
                     return NoContent();
                 }
                 return StatusCode(403, "Forbidden");
@@ -192,10 +221,11 @@ namespace TravelingBlog.Controllers
                 var user = await unitOfWork.Users.GetUserByIdentityId(userid.Value);
                 if (unitOfWork.Trips.IsUserCreator(user.Id, id)||caller.IsInRole("admin"))
                 {
+                    trip.Name = model.Name;
                     trip.Description = model.Description;
                     trip.IsDone = model.IsDone;
-                    trip.Name = model.Name;
                     unitOfWork.Trips.Update(trip);
+                    await unitOfWork.CompleteAsync();
                     return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone});
                 }
                 return StatusCode(403, "Forbidden");

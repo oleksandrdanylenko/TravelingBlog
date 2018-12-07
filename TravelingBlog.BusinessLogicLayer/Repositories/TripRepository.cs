@@ -18,7 +18,19 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
 
         public async Task<Trip> GetTripByIdAsync(int tripId)
         {
-            return await SingleOrDefaultAsync(t => t.Id.Equals(tripId));
+            return await ApplicationDbContext.Trips
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country).SingleOrDefaultAsync(t => t.Id.Equals(tripId));
+        }
+        public async Task<IEnumerable<Trip>> GetAllTripsAsync(int page,int pagesize)
+        {
+            var trips = await ApplicationDbContext.Trips
+                .Skip(page*pagesize - pagesize)
+                .Take(pagesize)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country)                
+                .ToListAsync();
+            return trips;
         }
 
         public IList<Trip> GetAllTripsAsync(PagingModel pageModel, out int total)
@@ -29,7 +41,6 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
             var data = tripq.Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
                 .Take(pageModel.PageSize);
             return data.ToList();
-
         }
 
         public bool IsUserCreator(int userId, int tripId)

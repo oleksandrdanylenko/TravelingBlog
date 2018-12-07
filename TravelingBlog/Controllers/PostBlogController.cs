@@ -90,7 +90,7 @@ namespace TravelingBlog.Controllers
                 var post = new PostBlog
                 {
                     Name = model.Name,
-                    DateOfCreation = model.DateOfCreation,
+                    //DateOfCreation = model.DateOfCreation.ToString(),
                     Plot = model.Plot
                 };
                 var userId = caller.Claims.Single(c => c.Type == "id");

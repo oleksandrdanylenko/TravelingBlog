@@ -12,6 +12,7 @@ import { Observable } from 'rxjs/Rx';
 import '../../rxjs-operators';
 import { TripDetails } from '../models/trip.details.interface';
 
+
 @Injectable()
 
 export class DashboardService extends BaseService {
