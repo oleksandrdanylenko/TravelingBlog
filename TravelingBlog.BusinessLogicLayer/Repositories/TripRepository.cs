@@ -36,7 +36,7 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
         public IList<Trip> GetAllTripsAsync(PagingModel pageModel, out int total)
         {
             var tripq = ApplicationDbContext.Trips.OrderBy(t => t.Name)
-                .ThenBy(x => x.Description).ToList();
+                .ThenBy(x => x.Description).Include(u=>u.UserInfo).ThenInclude(u=>u.Identity).ToList();
             total = tripq.Count();
             var data = tripq.Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
                 .Take(pageModel.PageSize);

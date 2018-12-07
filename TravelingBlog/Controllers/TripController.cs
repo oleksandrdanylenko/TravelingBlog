@@ -44,8 +44,7 @@ namespace TravelingBlog.Controllers
                 var list = new List<TripDTO>();
                 for (int i = 0; i < trips.Count(); i++)
                 {
-                    list.Add(new TripDTO
-                    {
+                    TripDTO dto = new TripDTO {
                         Id = trips.ElementAt(i).Id,
                         Name = trips.ElementAt(i).Name,
                         IsDone = trips.ElementAt(i).IsDone,
@@ -58,10 +57,11 @@ namespace TravelingBlog.Controllers
                             Phone = trips.ElementAt(i).UserInfo.Phone,
                             PictureUrl = trips.ElementAt(i).UserInfo.Identity.PictureUrl,
                             FacebookId = trips.ElementAt(i).UserInfo.Identity.FacebookId
-                        }                        
-                    });
+                        }
+                    };
+                    list.Add(dto);
                 }
-                return Ok(new {Total=total, List=list});
+                return Ok(new {Total=total, List=list, User = list});
             }
             catch(Exception ex)
             {

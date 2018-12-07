@@ -1,11 +1,8 @@
 import { User } from "./User";
 import { postBlog } from "./PostBlog";
+import { TripHalf } from "./TripHalf";
 
 export class Trip{
-    id?:number;
-    name?:string;
-    description?:string;
-    isDone?:boolean;
-    user?:User;
-    postBlog?:postBlog[];
+    total?:number;
+    list:TripHalf[];
 }

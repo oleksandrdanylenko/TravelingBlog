@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Rx';
 import '../rxjs-operators';
 import { Trip } from './models/trip';
 import { ConfigService } from '../shared/utils/config.service';
+import { TripHalf } from './models/TripHalf';
 
 
 @Injectable()
@@ -17,20 +18,20 @@ export class TripService extends BaseService {
     super();
     this.apiUrl=this.configService.getApiURI();
    }
-   getTrips(page:number):Observable<Trip[]>{
+   getTrips(page:number):Observable<Trip>{
     let headers = this.getHeaders();
 
-    return this.httpClient.get(`${this.apiUrl}${this.baseUrl}?page=${page}`,{headers})
+    return this.httpClient.get(`${this.apiUrl}${this.baseUrl}?pagenumber=${page}`,{headers})
     .map(response=>response.json())
     .catch(this.handleError);
    }
-   getTrip(id:number):Observable<Trip>{
+   getTrip(id:number):Observable<TripHalf>{
       let headers = this.getHeaders();
       return this.httpClient.get(`${this.apiUrl}${this.baseUrl}/${id}`,{headers}).
       map(response=>response.json())
       .catch(this.handleError);
    }
-   createTrip(trip:Trip):Observable<Trip>{
+   createTrip(trip:Trip):Observable<TripHalf>{
     let headers = this.getHeaders();
 
     return this.httpClient.post(`${this.apiUrl}${this.baseUrl}`,trip,{headers})

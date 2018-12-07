@@ -1,7 +1,7 @@
 <app-spinner [isRunning]="!trips"></app-spinner>
 <!-- | paginate: { id:'server', itemsPerPage: 10, currentPage: page ,totalItems:11}-->
-<body>  
-  <div class="toBeCentered" *ngFor="let trip of trips">
+<body id="bodyyy">  
+  <div class="toBeCentered" *ngFor="let trip of trips | paginate: { id:'server', itemsPerPage: 10, currentPage: page ,totalItems:total}">
       <article class="post">
           <header >
               <div class="title">
@@ -24,5 +24,5 @@
           </footer>
       </article>      
   </div>
-  <!--<pagination-controls (pageChange)="getPage($event)" id="server"></pagination-controls>-->
+  <pagination-controls (pageChange)="getPage($event)" id="server" responsive="true"></pagination-controls>
 </body>
