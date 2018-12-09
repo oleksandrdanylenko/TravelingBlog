@@ -37,10 +37,12 @@ namespace TravelingBlog.Controllers
             var userIdentity = mapper.Map<AppUser>(model);
 
             var result = await userManager.CreateAsync(userIdentity, model.Password);
+            
 
             if (!result.Succeeded)
                 return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-
+            userIdentity = await userManager.FindByNameAsync(userIdentity.UserName);
+            await userManager.AddToRoleAsync(userIdentity, "Member");
             unitOfWork.Users.Add(new UserInfo { IdentityId = userIdentity.Id, FirstName = model.FirstName, LastName = model.LastName });
             await unitOfWork.CompleteAsync();
 

@@ -72,6 +72,9 @@ namespace TravelingBlog.Controllers
 
                 if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
 
+                appUser = await userManager.FindByNameAsync(appUser.UserName);
+                await userManager.AddToRoleAsync(appUser, "Member");
+
                 unitOfWork.Users.Add(new UserInfo { IdentityId = appUser.Id, FirstName = userInfo.FirstName, LastName = userInfo.LastName });
                 await unitOfWork.CompleteAsync();
             }
