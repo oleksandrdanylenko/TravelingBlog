@@ -191,7 +191,7 @@ namespace TravelingBlog.Controllers
                 }
                 var userid = caller.Claims.Single(c => c.Type == "id");
                 var user = await unitOfWork.Users.GetUserByIdentityId(userid.Value);
-                if (unitOfWork.Trips.IsUserCreator(user.Id, id) || caller.IsInRole("admin"))
+                if (unitOfWork.Trips.IsUserCreator(user.Id, id) || caller.IsInRole("Admin")||caller.IsInRole("Moderator"))
                 {
                     unitOfWork.Trips.Remove(trip);
                     await unitOfWork.CompleteAsync();

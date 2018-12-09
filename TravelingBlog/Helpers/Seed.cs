@@ -73,6 +73,12 @@ namespace TravelingBlog.Helpers
 
                     _userManager.AddToRoleAsync(admin,"Admin").Wait();
                     _userManager.AddToRoleAsync(admin, "Moderator").Wait();
+                    _unitOfWork.Users.Add(new UserInfo
+                    {
+                        IdentityId = admin.Id,
+                        FirstName = "Admin",
+                        LastName = "Admin"
+                    });
                 }
             }
         }
