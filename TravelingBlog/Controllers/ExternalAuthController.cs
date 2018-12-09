@@ -83,10 +83,10 @@ namespace TravelingBlog.Controllers
             {
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Failed to create local user account.", ModelState));
             }
-
+            var roles = await userManager.GetRolesAsync(localUser);
             var jwt = await Tokens.GenerateJwt(jwtFactory.GenerateClaimsIdentity(localUser.UserName, localUser.Id),
-                                               jwtFactory, localUser.UserName, jwtOptions, 
-                                               new JsonSerializerSettings { Formatting = Formatting.Indented });
+                                               jwtFactory, localUser.UserName, jwtOptions,
+                                               new JsonSerializerSettings { Formatting = Formatting.Indented }, roles);
 
             return new OkObjectResult(jwt);
         }

@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TravelingBlog.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
@@ -37,12 +39,15 @@ namespace TravelingBlog.Controllers
 
             var identity = await GetClaimsIdentity(credentials.UserName, credentials.Password);
 
+
+
             if (identity == null)
             {
                 return BadRequest(Errors.AddErrorToModelState("login_failure", "Invalid username or password.", ModelState));
             }
-
-            var jwt = await Tokens.GenerateJwt(identity, jwtFactory, credentials.UserName, jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented });
+            var userTo = await userManager.FindByNameAsync(credentials.UserName);
+            var roles = await userManager.GetRolesAsync(userTo);
+            var jwt = await Tokens.GenerateJwt(identity, jwtFactory, credentials.UserName, jwtOptions, new JsonSerializerSettings { Formatting = Formatting.Indented }, roles);
             return new OkObjectResult(jwt);
         }
 

@@ -5,6 +5,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using TravelingBlog.Models;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 
 namespace TravelingBlog.Auth
 {
@@ -18,16 +19,21 @@ namespace TravelingBlog.Auth
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
-        public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity)
+        public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity, IList<string> roles)
         {
-            var claims = new[]
-         {
+            var claims = new List<Claim>
+            {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),
                  new Claim(JwtRegisteredClaimNames.Jti, await _jwtOptions.JtiGenerator()),
                  new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(_jwtOptions.IssuedAt).ToString(), ClaimValueTypes.Integer64),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Rol),
                  identity.FindFirst(Helpers.Constants.Strings.JwtClaimIdentifiers.Id)
-             };
+            };
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             // Create the JWT security token and encode it.
             var jwt = new JwtSecurityToken(

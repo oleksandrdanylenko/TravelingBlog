@@ -3,11 +3,8 @@ using System.Collections.Generic;
 
 namespace TravelingBlog.DataAcceesLayer.Models.Entities
 {
-    public class AppUser : IdentityUser<string>
+    public class Role : IdentityRole<string>
     {
-        //extended properties
-        public long? FacebookId { get; set; }
-        public string PictureUrl { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
     }
 }
