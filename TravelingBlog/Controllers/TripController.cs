@@ -83,7 +83,19 @@ namespace TravelingBlog.Controllers
                     return NotFound();
                 }
                 logger.LogInfo("Return trip with id=" + id);
-                return Ok(new TripDTO
+                var PostBlogsList = new List<PostBlogDTO>();
+                for (int i = 0; i < trip.PostBlogs.Count; ++i)
+                {
+                    PostBlogsList.Add(new PostBlogDTO
+                    {
+                        Id = trip.PostBlogs.ElementAt(i).Id,
+                        Name = trip.PostBlogs.ElementAt(i).Name,
+                        Plot = trip.PostBlogs.ElementAt(i).Plot,
+                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation.Date.ToString(),
+                        TripId = trip.PostBlogs.ElementAt(i).TripId
+                    });
+                }
+                return Ok(new TripDTOWithPostBlogs
                 {
                     Id = trip.Id,
                     Name = trip.Name,
@@ -97,42 +109,9 @@ namespace TravelingBlog.Controllers
                         Phone = trip.UserInfo.Phone,
                         PictureUrl = trip.UserInfo.Identity.PictureUrl,
                         FacebookId = trip.UserInfo.Identity.FacebookId
-                    }
+                    },
+                    PostBlogs = PostBlogsList
                 });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError($"Error occured inside GetTripAction:{ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-        }
-        [AllowAnonymous]
-        [HttpGet("GetTripWithPosts/{id}", Name = "GetTripWithPost")]
-        public async Task<IActionResult> GetTripWithPostBlogs(int id)
-        {
-            try
-            {
-                var trip = await unitOfWork.Trips.GetTripByIdAsync(id);
-                if (trip == null)
-                {
-                    logger.LogInfo("TripNotFound");
-                    return NotFound();
-                }
-                trip = unitOfWork.Trips.GetTripWithPostBlogs(id);
-                logger.LogInfo("Return trip with postblogs id=" + id);
-                var list = new List<PostBlogDTO>();
-                for (int i = 0; i < trip.PostBlogs.Count; i++)
-                {
-                    list.Add(new PostBlogDTO
-                    {
-                        Id = trip.PostBlogs.ElementAt(i).Id,
-                        Name = trip.PostBlogs.ElementAt(i).Name,
-                        Plot = trip.PostBlogs.ElementAt(i).Plot,
-                        TripId = trip.PostBlogs.ElementAt(i).TripId,
-                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation.Date.ToString()
-                    });
-                }
-                return Ok(new TripDetailsDTO(trip) { PostBlogs = list });
             }
             catch (Exception ex)
             {
