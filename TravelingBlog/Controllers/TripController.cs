@@ -72,11 +72,11 @@ namespace TravelingBlog.Controllers
         }
         [AllowAnonymous]
         [HttpGet("{id}", Name = "GetTrip")]
-        public async Task<IActionResult> GetTrip(int id)
+        public IActionResult GetTrip(int id)
         {
             try
             {
-                var trip = await unitOfWork.Trips.GetTripByIdAsync(id);
+                var trip = unitOfWork.Trips.GetTripWithPostBlogs(id);
                 if (trip == null)
                 {
                     logger.LogInfo("TripNotFound");
