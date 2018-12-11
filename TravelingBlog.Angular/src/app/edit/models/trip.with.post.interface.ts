@@ -1,18 +1,21 @@
+import { User } from "./UserInfo";
+
 export class TripWithPost {
     constructor(
-    public id? : number,
-    public name?: string,
-    public isDone?: boolean,
-    public description?: string,
-    public postBlogs?:Post[]){}
+    public Id? : number,
+    public Name?: string,
+    public Description?: string,
+    public IsDone?: boolean,
+    public User?:User,
+    public PostBlogs?:Post[]){}
 }
 
 export class Post{
     constructor(
-        public id?: number,
-        public name?: string,
-        public plot?: string,
-        public datOfCreation?: string,
-        public tripId?:number
+        public Id?: number,
+        public Name?: string,
+        public Plot?: string,
+        public DatOfCreation?: string,
+        public TripId?:number
     ){}
 }

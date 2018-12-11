@@ -59,7 +59,8 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
         }
         public Trip GetTripWithPostBlogs(int id)
         {
-            return ApplicationDbContext.Trips.Include(t => t.PostBlogs.Select(p=>p.Images))
+            return ApplicationDbContext.Trips.Include(t => t.PostBlogs).ThenInclude(p=>p.Images)
+                .Include(t=>t.UserInfo).ThenInclude(u=>u.Identity)
                 .SingleOrDefault(t => t.Id == id);
         }
 

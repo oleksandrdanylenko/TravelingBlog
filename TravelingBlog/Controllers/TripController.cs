@@ -15,7 +15,6 @@ using TravelingBlog.DataAcceesLayer.Models.Entities;
 namespace TravelingBlog.Controllers
 {
     [Route("api/trip")]
-    [Authorize]
     public class TripController : Controller
     {
         private readonly ClaimsPrincipal caller;
@@ -142,7 +141,7 @@ namespace TravelingBlog.Controllers
         }
         //New method for Trips with highest Rating
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet("highest")]
         public IActionResult GetTripsWithHighestRating()
         {
             var rating = unitOfWork.Trips.GetTripsWithHighestRating();
