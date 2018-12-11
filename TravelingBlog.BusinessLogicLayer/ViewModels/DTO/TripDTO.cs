@@ -11,6 +11,6 @@ namespace TravelingBlog.BusinessLogicLayer.ViewModels.DTO
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsDone { get; set; }
-        public UserInfoDTO User { get; set; }
+        public int? UserId { get; set; }
     }
 }

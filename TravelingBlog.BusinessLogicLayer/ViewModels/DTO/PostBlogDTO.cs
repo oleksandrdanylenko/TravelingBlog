@@ -13,5 +13,6 @@ namespace TravelingBlog.BusinessLogicLayer.ViewModels.DTO
         public string Plot { get; set; }
         public string DateOfCreation { get; set; } = DateTime.Now.Date.ToString();
         public int TripId { get; set; }
+        public IList<string> Url { get; set; }
     }
 }

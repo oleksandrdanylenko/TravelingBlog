@@ -17,27 +17,32 @@ import { AccountModule } from './account/account.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 /*Edit Imports */
 import { EditModule } from './edit/edit.module';
+import { UserInfoModule } from './userinfo/userinfo.module';
 
 import { ConfigService } from './shared/utils/config.service';
 import { FooterComponent } from './footer/footer.component';
 import { TripsModule } from './trips/trips.module';
+import { SearchModule } from './search/search.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     HomeComponent,
-    FooterComponent,
+    FooterComponent
   ],
   imports: [
     AccountModule,
     DashboardModule,
     EditModule,
+    UserInfoModule,
     BrowserModule,
     FormsModule,
     HttpModule,
     routing,
-    TripsModule
+    TripsModule,
+    SearchModule,
+    routing
   ],
   providers: [ConfigService, {
     provide: XHRBackend,

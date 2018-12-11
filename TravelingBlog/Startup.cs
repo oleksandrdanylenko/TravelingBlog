@@ -21,6 +21,7 @@ using TravelingBlog.Models;
 using NLog;
 using Microsoft.AspNetCore.HttpOverrides;
 using TravelingBlog.ActionFilters;
+using TravelingBlog.Helpers.AzureStorage;
 
 namespace TravelingBlog
 {
@@ -46,7 +47,7 @@ namespace TravelingBlog
             services.ConfigureSqlContext(Configuration);
             services.ConfigureUnitOfWork();
             services.ConfigureAutoMapper();
-
+            services.AddScoped<IAzureBlob, AzureBlob>();
             // Add validation attribute service.
             services.AddScoped<ValidationFilterAttribute>();
 
