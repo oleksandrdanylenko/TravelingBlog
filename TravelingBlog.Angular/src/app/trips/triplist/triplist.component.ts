@@ -25,8 +25,6 @@ export class TriplistComponent implements OnInit {
     .subscribe((resp:Trip)=>this.onSuccess(resp));
   }
   
- 
-  
   onSuccess(res:Trip) {  
     console.log(res);  
     if (res != undefined&&res.list.length!=0) {  
