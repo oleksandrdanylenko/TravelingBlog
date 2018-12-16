@@ -52,7 +52,7 @@ namespace TravelingBlog.Controllers
 
         [Authorize(Policy = "RequireAdminRole")]
         [HttpPost("editUserRoles/{userName}")]
-        public async Task<IActionResult> EditUserRoles(string userName, RoleEditDTO roleEditDTO)
+        public async Task<IActionResult> EditUserRoles(string userName,[FromBody]RoleEditDTO roleEditDTO)
         {
             var user = await _userManager.FindByNameAsync(userName);
 
