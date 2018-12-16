@@ -20,7 +20,10 @@
         </li>
         <li>
             <a class="nav-link" routerLink="/trips">Trips</a>
-          </li>
+        </li>
+        <li *appHasRole="['Admin','Moderator']">
+          <a class="nav-link" routerLink="/admin">Admin</a>
+        </li>
       </ul>
       <nav class="navbar-nav navbar-left" action="">
         <form class="form-inline my-1 my-lg-0">

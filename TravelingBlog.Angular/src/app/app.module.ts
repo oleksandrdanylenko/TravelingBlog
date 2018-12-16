@@ -23,13 +23,17 @@ import { ConfigService } from './shared/utils/config.service';
 import { FooterComponent } from './footer/footer.component';
 import { TripsModule } from './trips/trips.module';
 import { SearchModule } from './search/search.module';
+import { AdminComponent } from './admin/admin.component';
+import { HasRoleDirective } from './directives/has-role.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     HomeComponent,
-    FooterComponent
+    FooterComponent,
+    AdminComponent,
+    HasRoleDirective
   ],
   imports: [
     AccountModule,

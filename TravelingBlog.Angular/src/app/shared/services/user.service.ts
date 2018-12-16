@@ -11,6 +11,7 @@ import { BehaviorSubject } from 'rxjs/Rx';
 
 // Add the RxJS Observable operators we need in this app.
 import '../../rxjs-operators';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable()
 
@@ -24,6 +25,9 @@ export class UserService extends BaseService {
   authNavStatus$ = this._authNavStatusSource.asObservable();
 
   private loggedIn = false;
+
+  jwtHelper = new JwtHelperService();
+  decodedToken:any;
 
   constructor(private http: Http, private configService: ConfigService) {
     super();
@@ -57,6 +61,7 @@ export class UserService extends BaseService {
       .map(res => {
         localStorage.setItem('auth_token', res.auth_token);
         this.loggedIn = true;
+        this.decodedToken = this.jwtHelper.decodeToken(res.auth_token);
         this._authNavStatusSource.next(true);
         return true;
       })
@@ -70,6 +75,7 @@ export class UserService extends BaseService {
   }
 
   isLoggedIn() {
+    this.decodedToken = this.jwtHelper.decodeToken(localStorage.getItem('auth_token'));
     return this.loggedIn;
   }
 
@@ -88,5 +94,16 @@ export class UserService extends BaseService {
         return true;
       })
       .catch(this.handleError);
+  }
+  roleMatch(allowedRoles):boolean{
+    let isMatch = false;
+    const userRoles = this.decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] as Array<string>;
+    allowedRoles.forEach(element => {
+      if(userRoles.includes(element)){
+        isMatch = true;
+        return;
+      }
+    });
+    return isMatch;
   }
 }
