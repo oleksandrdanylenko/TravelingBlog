@@ -21,18 +21,29 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
 
         public async Task<Trip> GetTripByIdAsync(int tripId)
         {
-            return await SingleOrDefaultAsync(t => t.Id.Equals(tripId));
+            return await ApplicationDbContext.Trips
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country).SingleOrDefaultAsync(t => t.Id.Equals(tripId));
+        }
+        public async Task<IEnumerable<Trip>> GetAllTripsAsync(int page,int pagesize)
+        {
+            var trips = await ApplicationDbContext.Trips
+                .Skip(page*pagesize - pagesize)
+                .Take(pagesize)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Identity)
+                .Include(t => t.UserInfo).ThenInclude(u => u.Country)                
+                .ToListAsync();
+            return trips;
         }
 
         public IList<Trip> GetAllTripsAsync(PagingModel pageModel, out int total)
         {
             var tripq = ApplicationDbContext.Trips.OrderBy(t => t.Name)
-                .ThenBy(x => x.Description).ToList();
+                .ThenBy(x => x.Description).Include(u=>u.UserInfo).ThenInclude(u=>u.Identity).ToList();
             total = tripq.Count();
             var data = tripq.Skip(pageModel.PageSize * (pageModel.PageNumber - 1))
                 .Take(pageModel.PageSize);
             return data.ToList();
-
         }
 
         public IEnumerable<Trip> GetTripsWithHighestRating(int count)
@@ -70,7 +81,9 @@ namespace TravelingBlog.BusinessLogicLayer.Repositories
         }
         public Trip GetTripWithPostBlogs(int id)
         {
-            return ApplicationDbContext.Trips.Include(t => t.PostBlogs).SingleOrDefault(t => t.Id == id);
+            return ApplicationDbContext.Trips.Include(t => t.PostBlogs).ThenInclude(p=>p.Images)
+                .Include(t=>t.UserInfo).ThenInclude(u=>u.Identity)
+                .SingleOrDefault(t => t.Id == id);
         }
 
         public IList<TripWithUserInfo> SearchTrips(Search searchQuery, out int total)

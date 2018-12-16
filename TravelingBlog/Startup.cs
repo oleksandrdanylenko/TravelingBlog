@@ -1,25 +1,25 @@
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+ï»¿using System;
+using System.Text;
+using TravelingBlog.Auth;
+using TravelingBlog.DataAcceesLayer.Data;
+using TravelingBlog.Extensions;
+using TravelingBlog.Helpers;
+using TravelingBlog.DataAcceesLayer.Models;
+using TravelingBlog.DataAcceesLayer.Models.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using NLog;
-using System;
 using System.IO;
-using System.Text;
 using TravelingBlog.ActionFilters;
-using TravelingBlog.Auth;
-using TravelingBlog.DataAcceesLayer.Data;
-using TravelingBlog.DataAcceesLayer.Models;
-using TravelingBlog.DataAcceesLayer.Models.Entities;
-using TravelingBlog.Extensions;
-using TravelingBlog.Helpers;
 using TravelingBlog.Helpers.AzureStorage;
 using TravelingBlog.Models;
 
@@ -28,7 +28,7 @@ namespace TravelingBlog
     public class Startup
     {
         private readonly SymmetricSecurityKey _signingKey;
-        
+
         public Startup(IConfiguration configuration)
         {
             LogManager.LoadConfiguration(String.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
@@ -67,6 +67,25 @@ namespace TravelingBlog
                 options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
             });
 
+
+
+
+            // add identity
+            var builder = services.AddIdentityCore<AppUser>(o =>
+            {
+                // configure identity options
+                o.Password.RequireDigit = false;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 6;
+            });
+            builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
+
+            builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            builder.AddRoleValidator<RoleValidator<Role>>();
+            builder.AddRoleManager<RoleManager<Role>>();
+            builder.AddSignInManager<SignInManager<AppUser>>();
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -83,6 +102,7 @@ namespace TravelingBlog
                 ClockSkew = TimeSpan.Zero
             };
 
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -98,26 +118,23 @@ namespace TravelingBlog
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireModeratorAndAdmin", policy => policy.RequireRole("Admin", "Moderator"));
             });
 
-            // add identity
-            var builder = services.AddIdentityCore<AppUser>(o =>
+            services.AddMvc(options =>
             {
-                // configure identity options
-                o.Password.RequireDigit = false;
-                o.Password.RequireLowercase = false;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireNonAlphanumeric = false;
-                o.Password.RequiredLength = 6;
-            });
-            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
-            builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-            services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+                //var policy = new AuthorizationPolicyBuilder()
+                //.RequireAuthenticatedUser()
+                //.Build();
+                //options.Filters.Add(new AuthorizeFilter(policy));               
+            }).AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
+            services.AddTransient<Seed>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
         {
             if (env.IsDevelopment())
             {
@@ -128,6 +145,7 @@ namespace TravelingBlog
             app.UseAuthentication();
             app.UseDefaultFiles();
 
+
             app.UseCors("CorsPolicy");
 
             // app.UseForwardedHeaders will forward proxy headers to the current request. This will help us during the Linux deployment.
@@ -136,7 +154,7 @@ namespace TravelingBlog
                 ForwardedHeaders = ForwardedHeaders.All
             });
 
-            // app.Use(async (context, next) => … will point on the index page in the Angular project.
+            // app.Use(async (context, next) => ï¿½ will point on the index page in the Angular project.
             /*app.Use(async (context, next) =>
             {
                 await next();
@@ -153,6 +171,8 @@ namespace TravelingBlog
             app.UseStaticFiles();
 
             app.UseMvc();
+
+            seeder.SeedUsers();
 
             app.Run(async (context) =>
             {

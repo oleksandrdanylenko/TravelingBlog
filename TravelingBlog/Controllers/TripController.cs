@@ -15,13 +15,12 @@ using TravelingBlog.DataAcceesLayer.Models.Entities;
 namespace TravelingBlog.Controllers
 {
     [Route("api/trip")]
-    [Authorize]
     public class TripController : Controller
     {
         private readonly ClaimsPrincipal caller;
         private IUnitOfWork unitOfWork;
         private ILoggerManager logger;
-
+        private const int pageSize = 10;
         public TripController(ILoggerManager logger, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             this.logger = logger;
@@ -41,15 +40,24 @@ namespace TravelingBlog.Controllers
                     return NotFound();
                 }
                 logger.LogInfo("Return all trips from database");
-                var list = new List<TripDTO>();
+                var list = new List<TripDTOWithPostBlogs>();
                 for (int i = 0; i < trips.Count(); i++)
                 {
-                    list.Add(new TripDTO
+                    list.Add(new TripDTOWithPostBlogs
                     {
                         Id = trips.ElementAt(i).Id,
                         Name = trips.ElementAt(i).Name,
                         IsDone = trips.ElementAt(i).IsDone,
-                        UserId = trips.ElementAt(i).UserInfoId
+                        Description = trips.ElementAt(i).Description,
+                        User = new UserInfoDTO
+                        {
+                            Id = trips.ElementAt(i).UserInfo.Id,
+                            FirstName = trips.ElementAt(i).UserInfo.FirstName,
+                            LastName = trips.ElementAt(i).UserInfo.LastName,
+                            Phone = trips.ElementAt(i).UserInfo.Phone,
+                            PictureUrl = trips.ElementAt(i).UserInfo.Identity.PictureUrl,
+                            FacebookId = trips.ElementAt(i).UserInfo.Identity.FacebookId
+                        }
                     });
                 }
                 return Ok(new { Total = total, List = list });
@@ -83,31 +91,47 @@ namespace TravelingBlog.Controllers
         }
         [AllowAnonymous]
         [HttpGet("GetTripWithPosts/{id}", Name = "GetTripWithPost")]
-        public async Task<IActionResult> GetTripWithPostBlogs(int id)
+        public IActionResult GetTripWithPostBlogs(int id)
         {
             try
             {
-                var trip = await unitOfWork.Trips.GetTripByIdAsync(id);
+                var trip = unitOfWork.Trips.GetTripWithPostBlogs(id);
+
                 if (trip == null)
-                {
-                    logger.LogInfo("TripNotFound");
                     return NotFound();
-                }
-                trip = unitOfWork.Trips.GetTripWithPostBlogs(id);
-                logger.LogInfo("Return trip with postblogs id=" + id);
                 var list = new List<PostBlogDTO>();
                 for (int i = 0; i < trip.PostBlogs.Count; i++)
                 {
-                    list.Add(new PostBlogDTO
-                    {
-                        Id = trip.PostBlogs.ElementAt(i).Id,
-                        Name = trip.PostBlogs.ElementAt(i).Name,
-                        Plot = trip.PostBlogs.ElementAt(i).Plot,
-                        TripId = trip.PostBlogs.ElementAt(i).TripId,
-                        DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation
-                    });
+                    list.Add(
+                        new PostBlogDTO
+                        {
+                            Id = trip.PostBlogs.ElementAt(i).Id,
+                            Name = trip.PostBlogs.ElementAt(i).Name,
+                            Plot = trip.PostBlogs.ElementAt(i).Plot,
+                            TripId = trip.PostBlogs.ElementAt(i).TripId,
+                            DateOfCreation = trip.PostBlogs.ElementAt(i).DateOfCreation.ToString(),
+                            Url = trip.PostBlogs.ElementAt(i).Images.Select(image=>image.Path).ToList()
+                        }
+                    );
                 }
-                return Ok(new TripDetailsDTO(trip) { PostBlogs = list });
+
+                return Ok(new TripDTOWithPostBlogs
+                {
+                    Id = trip.Id,
+                    Name = trip.Name,
+                    Description = trip.Description,
+                    IsDone = trip.IsDone,
+                    User = new UserInfoDTO
+                    {
+                        Id = trip.UserInfo.Id,
+                        FirstName = trip.UserInfo.FirstName,
+                        LastName = trip.UserInfo.LastName,
+                        Phone = trip.UserInfo.Phone,
+                        PictureUrl = trip.UserInfo.Identity.PictureUrl,
+                        FacebookId = trip.UserInfo.Identity.FacebookId
+                    },
+                    PostBlogs = list
+                });
             }
             catch (Exception ex)
             {
@@ -140,29 +164,38 @@ namespace TravelingBlog.Controllers
 
         [HttpPost]
         [Route("addtrip")]
-        public async Task<IActionResult> AddTripAsync([FromBody]TripDTO model)
+        public async Task<IActionResult> AddTripAsync([FromBody]TripDTOWithPostBlogs model)
         {
             try
             {
-                if(model==null)
+                if (model == null)
                 {
                     logger.LogError($"Object sent from client is null");
                     return BadRequest("Trip object is null");
                 }
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     logger.LogError($"Object state is not valid");
                     return BadRequest("Trip object is invalid");
                 }
-                var trip = new Trip { Name = model.Name, IsDone = model.IsDone, Description=model.Description };
+                var trip = new Trip { Name = model.Name, IsDone = model.IsDone, Description = model.Description };
                 var userId = caller.Claims.Single(c => c.Type == "id");
                 var user = await unitOfWork.Users.GetUserByIdentityId(userId.Value);
                 trip.UserInfo = user;
                 unitOfWork.Trips.Add(trip);
-                model.UserId = user.Id;
+                await unitOfWork.CompleteAsync();
+                model.User = new UserInfoDTO
+                {
+                    Id = trip.UserInfo.Id,
+                    FirstName = trip.UserInfo.FirstName,
+                    LastName = trip.UserInfo.LastName,
+                    Phone = trip.UserInfo.Phone,
+                    PictureUrl = trip.UserInfo.Identity.PictureUrl,
+                    FacebookId = trip.UserInfo.Identity.FacebookId
+                };
                 return Ok(model);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError($"Error occured inside AddTripAsync:{ex.Message}");
                 return StatusCode(500, "Internal server error");
@@ -180,9 +213,10 @@ namespace TravelingBlog.Controllers
                 }
                 var userid = caller.Claims.Single(c => c.Type == "id");
                 var user = await unitOfWork.Users.GetUserByIdentityId(userid.Value);
-                if (unitOfWork.Trips.IsUserCreator(user.Id, id)||caller.IsInRole("admin"))
+                if (unitOfWork.Trips.IsUserCreator(user.Id, id) || caller.IsInRole("Admin")||caller.IsInRole("Moderator"))
                 {
                     unitOfWork.Trips.Remove(trip);
+                    await unitOfWork.CompleteAsync();
                     return NoContent();
                 }
                 return StatusCode(403, "Forbidden");
@@ -194,7 +228,7 @@ namespace TravelingBlog.Controllers
             }
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id,[FromBody]TripDTO model)
+        public async Task<IActionResult> Update(int id, [FromBody]TripDTO model)
         {
             try
             {
@@ -216,17 +250,18 @@ namespace TravelingBlog.Controllers
                 }
                 var userid = caller.Claims.Single(c => c.Type == "id");
                 var user = await unitOfWork.Users.GetUserByIdentityId(userid.Value);
-                if (unitOfWork.Trips.IsUserCreator(user.Id, id)||caller.IsInRole("admin"))
+                if (unitOfWork.Trips.IsUserCreator(user.Id, id) || caller.IsInRole("admin"))
                 {
+                    trip.Name = model.Name;
                     trip.Description = model.Description;
                     trip.IsDone = model.IsDone;
-                    trip.Name = model.Name;
                     unitOfWork.Trips.Update(trip);
-                    return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone});
+                    await unitOfWork.CompleteAsync();
+                    return Ok(new TripDTO { Id = trip.Id, Name = trip.Name, IsDone = trip.IsDone });
                 }
                 return StatusCode(403, "Forbidden");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError($"An error occured UpdateTripAction;{ex.Message}");
                 return StatusCode(500, "Internal server error");
@@ -237,14 +272,14 @@ namespace TravelingBlog.Controllers
         // api/trip/mytrips
         [HttpGet("mytrips")]
         public async Task<IActionResult> GetUserTripsAsync()
-        { 
-            
+        {
+
             var userId = caller.Claims.Single(c => c.Type == "id");
             var user = await unitOfWork.Users.GetUserByIdentityId(userId.Value);
 
-            var trips = await unitOfWork.Trips.GetUserTripsAsync(userId.Value);       
-              
-            
+            var trips = await unitOfWork.Trips.GetUserTripsAsync(userId.Value);
+
+
             return Ok(trips);
         }
 

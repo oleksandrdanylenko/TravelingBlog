@@ -21,6 +21,7 @@ import { UserInfoModule } from './userinfo/userinfo.module';
 
 import { ConfigService } from './shared/utils/config.service';
 import { FooterComponent } from './footer/footer.component';
+import { TripsModule } from './trips/trips.module';
 import { SearchModule } from './search/search.module';
 
 @NgModule({
@@ -38,6 +39,8 @@ import { SearchModule } from './search/search.module';
     BrowserModule,
     FormsModule,
     HttpModule,
+    routing,
+    TripsModule,
     SearchModule,
     routing
   ],

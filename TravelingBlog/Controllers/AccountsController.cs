@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using TravelingBlog.DataAcceesLayer.Data;
 using TravelingBlog.Helpers;
 using TravelingBlog.DataAcceesLayer.Models.Entities;
 using TravelingBlog.BusinessLogicLayer.ViewModels;
@@ -7,10 +6,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TravelingBlog.BusinessLogicLayer.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using TravelingBlog.BusinessLogicLayer.ViewModels.DTO;
 
 namespace TravelingBlog.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     public class AccountsController : Controller
     {
@@ -37,11 +38,13 @@ namespace TravelingBlog.Controllers
             var userIdentity = mapper.Map<AppUser>(model);
 
             var result = await userManager.CreateAsync(userIdentity, model.Password);
+            
 
             if (!result.Succeeded)
                 return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-
-            unitOfWork.Users.Add(new UserInfo { IdentityId = userIdentity.Id, FirstName=model.FirstName, LastName=model.LastName });
+            userIdentity = await userManager.FindByNameAsync(userIdentity.UserName);
+            await userManager.AddToRoleAsync(userIdentity, "Member");
+            unitOfWork.Users.Add(new UserInfo { IdentityId = userIdentity.Id, FirstName = model.FirstName, LastName = model.LastName });
             await unitOfWork.CompleteAsync();
 
             return new OkObjectResult("Account created");

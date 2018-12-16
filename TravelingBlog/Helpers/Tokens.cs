@@ -4,17 +4,18 @@ using System.Threading.Tasks;
 using TravelingBlog.Auth;
 using TravelingBlog.Models;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace TravelingBlog.Helpers
 {
     public class Tokens
     {
-        public static async Task<string> GenerateJwt(ClaimsIdentity identity, IJwtFactory jwtFactory, string userName, JwtIssuerOptions jwtOptions, JsonSerializerSettings serializerSettings)
+        public static async Task<string> GenerateJwt(ClaimsIdentity identity, IJwtFactory jwtFactory, string userName, JwtIssuerOptions jwtOptions, JsonSerializerSettings serializerSettings, IList<string> roles)
         {
             var response = new
             {
                 id = identity.Claims.Single(c => c.Type == "id").Value,
-                auth_token = await jwtFactory.GenerateEncodedToken(userName, identity),
+                auth_token = await jwtFactory.GenerateEncodedToken(userName, identity, roles),
                 expires_in = (int)jwtOptions.ValidFor.TotalSeconds
             };
 

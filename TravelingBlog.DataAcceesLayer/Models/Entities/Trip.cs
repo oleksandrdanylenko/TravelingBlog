@@ -16,14 +16,13 @@ namespace TravelingBlog.DataAcceesLayer.Models.Entities
         public int UserInfoId { get; set; }
         public double RatingTrip { get; set; }
         public UserInfo UserInfo { get; set; }
-        public ICollection<PostBlog> PostBlogs { get; set; }
+        public List<PostBlog> PostBlogs { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<TagTrip> TagTrips { get; set; }
         public ICollection<CountryTrip> CountryTrips { get; set; }
         public ICollection<Rating> Ratings { get; set; }
         public Trip()
         {
-            PostBlogs = new List<PostBlog>();
             Comments = new List<Comment>();
             TagTrips = new List<TagTrip>();
             CountryTrips = new List<CountryTrip>();

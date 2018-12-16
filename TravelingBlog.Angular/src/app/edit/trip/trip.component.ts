@@ -38,10 +38,10 @@ export class TripEditComponent implements OnInit {
   }
 
   save(post: Post){
-    this.post.tripId=Number.parseInt(this.id);
-    console.log(this.trip.postBlogs);
+    this.post.TripId=Number.parseInt(this.id);
+    console.log(this.trip.PostBlogs);
     console.log(post);
-    if(post.id == null)
+    if(post.Id == null)
     {
       
       this.editService.createPost(post).subscribe(data => this.loadTrip(this.id));

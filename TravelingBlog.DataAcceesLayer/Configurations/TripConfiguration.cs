@@ -12,6 +12,7 @@ namespace TravelingBlog.DataAcceesLayer.Configurations
             builder.Property(p => p.Id).HasColumnName("id");
             builder.Property(p => p.Name).IsRequired().HasColumnName("postname");
             builder.Property(p => p.Description).HasColumnName("description");
+            builder.Property(p => p.Description).HasColumnName("description");
             builder.Property(p => p.IsDone).IsRequired().HasColumnName("isDone");
             builder.HasOne(p => p.UserInfo).WithMany(u => u.Trips).HasForeignKey(p => p.UserInfoId).
                 OnDelete(DeleteBehavior.Cascade).
