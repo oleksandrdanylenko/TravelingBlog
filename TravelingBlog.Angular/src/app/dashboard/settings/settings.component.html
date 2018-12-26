@@ -1,3 +1,93 @@
-<p>
-  settings works!
-</p>
+<div class="container">
+    <div class="row">
+      <div class="card">
+        <div class="card-header">
+          <h2>Settings</h2>
+        </div>
+        <div class="card-body">
+            <h2>Choose what do you want edit</h2>
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" href="#menu0">Password</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu1">Name</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu2">E-mail</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu3">Photo</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#menu4">Menu 2</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+    
+            <div id="menu0" class="container tab-pane active"><br>
+              <div class="row" >
+                <div class="card-body">
+                  <!-- password part -->
+                  <h3>Change password</h3>
+                    <label for="password"><b>Сurrent password</b></label>
+                    <input id="password" type="password" class="form-control"name="password" placeholder="Сurrent password" ngModel>
+                          <label for="password"><b>New password</b></label>
+                    <input id="password" type="password" class="form-control"name="password" placeholder="New password" ngModel>
+                          <label for="password"><b>Repeat new password</b></label>
+                    <input id="password" type="password" class="form-control"name="password" placeholder="Repeat new password" ngModel>
+                          <button type="button" class="btn btn-secondary btn-lg btn-block">Save changes</button>
+                </div> 
+              </div>
+            </div>
+                    <!-- Enter firstName, lastName part-->
+            <div id="menu1" class="container tab-pane"><br>
+              <div class="row" >
+                <div class="card-body">
+                  <h3>Change first-last-name:</h3>
+                    <label for="first-name"><b>Change first name</b></label>
+                    <input type="text" class="form-control" id="first-name" placeholder="Your first name" name="firstName" tmFocus ngModel>
+                    
+                    <label for="last-name"><b>Change Last name</b></label>
+                    <input type="text" class="form-control" id="last-name" placeholder="Your last name" name="lastName" ngModel>
+      
+                    <button type="button" class="btn btn-secondary btn-lg btn-block">Save changes</button>
+                </div> 
+              </div>
+            </div>
+    
+            <div id="menu2" class="container tab-pane"><br>
+              <div class="row" >
+                <div class="card-body">
+                  <!-- Enter email -->
+                  <h3>Change e-mail address:</h3>
+                    <label for="email"><b>Сurrent e-mail</b></label>
+                    <input id="email" type="text" required name="email" validateEmail class="form-control" placeholder="Сurrent e-mail" ngModel #email="ngModel">
+                    <label for="email"><b>New e-mail</b></label>
+                    <input id="email" type="text" required name="email" validateEmail class="form-control" placeholder="New e-mail" ngModel #email="ngModel">
+    
+                    <button type="button" class="btn btn-secondary btn-lg btn-block">Save changes</button>
+                </div> 
+              </div>
+            </div>
+    
+            <div id="menu3" class="container tab-pane"><br>
+              <div class="row" >
+                <div class="card-body">
+                  <!-- Change photo  -->
+                  <h3>Change photo</h3>
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+                      <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                      <div class="invalid-feedback">Example invalid custom file feedback</div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-lg btn-block">Save changes</button>
+                </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

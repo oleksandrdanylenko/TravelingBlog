@@ -1,0 +1,26 @@
+.card {
+    background-color: white;
+    margin: 15px;
+    width: 100%;
+    .card-header{
+      h2{
+        color: aliceblue;
+      }
+      border-radius: 10px;
+      background-color: rgb(71, 71, 71);
+    }
+    .card-body{
+        padding-top: 0px;
+        label{
+           margin-bottom: 1px;  
+        }
+        input{
+            margin-bottom: 8px;
+        }
+        button{
+           margin-top: 15px; 
+        }
+    }
+    background-color: rgba(107, 107, 110, 0.055);
+    border-radius: 10px;
+ }
