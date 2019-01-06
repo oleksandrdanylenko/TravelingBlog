@@ -27,8 +27,8 @@ import { AdminComponent } from './admin/admin.component';
 import { HasRoleDirective } from './directives/has-role.directive';
 import { AdminService } from './admin/admin.service';
 import { UserManagementComponent } from './admin/user-management/user-management.component';
-
-import {TabsModule} from 'ngx-bootstrap';
+import {TabsModule, ModalModule} from 'ngx-bootstrap';
+import { RolesModalComponent } from './admin/roles-modal/roles-modal.component';
 
 
 @NgModule({
@@ -39,7 +39,8 @@ import {TabsModule} from 'ngx-bootstrap';
     FooterComponent,
     AdminComponent,
     HasRoleDirective,
-    UserManagementComponent
+    UserManagementComponent,
+    RolesModalComponent
   ],
   imports: [
     AccountModule,
@@ -53,12 +54,16 @@ import {TabsModule} from 'ngx-bootstrap';
     TripsModule,
     SearchModule,
     routing,
-    TabsModule.forRoot()
+    TabsModule.forRoot(),
+    ModalModule.forRoot()
   ],
   providers: [ConfigService, {
     provide: XHRBackend,
     useClass: AuthenticateXHRBackend
   },AdminService],
+  entryComponents: [
+    RolesModalComponent
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
