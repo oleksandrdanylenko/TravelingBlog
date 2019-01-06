@@ -20,6 +20,7 @@ using TravelingBlog.BusinessLogicLayer.SecondaryServices.Auth;
 using TravelingBlog.BusinessLogicLayer.SecondaryServices.AzureStorage;
 using TravelingBlog.BusinessLogicLayer.SecondaryServices.LoggerService;
 using TravelingBlog.DataAcceesLayer.Data;
+using TravelingBlog.DataAcceesLayer.Models;
 using TravelingBlog.DataAcceesLayer.Models.Entities;
 using TravelingBlog.Extensions;
 using TravelingBlog.Helpers;
@@ -49,6 +50,7 @@ namespace TravelingBlog
             services.ConfigureSqlContext(Configuration);
             services.ConfigureUnitOfWork();
             services.ConfigureAutoMapper();
+            services.ConfigureSeed();
 
             services.AddScoped<ITripService, TripService>();
             //
@@ -105,7 +107,12 @@ namespace TravelingBlog
             // api user claim policy
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("ApiUser", 
+                    policy => 
+                    policy
+                    .RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+                options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireModeratorAndAdmin", policy => policy.RequireRole("Admin", "Moderator"));
             });
 
             // add identity
@@ -118,14 +125,19 @@ namespace TravelingBlog
                 o.Password.RequireNonAlphanumeric = false;
                 o.Password.RequiredLength = 6;
             });
-            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+            builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
             builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+            builder.AddRoleValidator<RoleValidator<Role>>();
+            builder.AddRoleManager<RoleManager<Role>>();
+            builder.AddSignInManager<SignInManager<AppUser>>();
+
             services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerManager logger)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerManager logger, Seed seeder)
         {
             if (env.IsDevelopment())
             {
@@ -150,11 +162,14 @@ namespace TravelingBlog
 
             app.UseMvc();
 
+            seeder.SeedUsers();
+
             app.Run(async (context) =>
             {
                 context.Response.ContentType = "text/html";
                 await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "index.html"));
             });
+
         }
     }
 }
